@@ -1,0 +1,264 @@
+.socios-toolbar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.socios-buscador {
+  flex: 1;
+  background: #fff;
+  color: #111;
+  border-radius: var(--radio-chico);
+  padding: 12px 20px;
+}
+
+.socios-buscador::placeholder {
+  color: #888;
+}
+
+.socios-grilla {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.socios-vacio {
+  color: var(--color-texto-secundario);
+}
+
+.socio-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-negro);
+  border: 1px solid var(--color-verde);
+  border-radius: var(--radio-medio);
+  padding: 28px 16px;
+  color: var(--color-texto);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.socio-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(47, 220, 4, 0.584);
+}
+
+.socio-card-foto {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--color-verde);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-panel);
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--color-verde);
+}
+
+.socio-card-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.socio-card-nombre {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.socio-card-dni {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+}
+.socio-form {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 28px;
+}
+
+.socio-form-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.socio-form-foto-circulo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid var(--color-verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-texto-secundario);
+  overflow: hidden;
+}
+
+.socio-form-foto-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.socio-form-foto-boton {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.socio-form-foto-input-oculto {
+  display: none;
+}
+
+.socio-form-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.socio-form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.socio-form-campos label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.socio-form-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.socio-form-campos textarea {
+  resize: vertical;
+  font-weight: 400;
+}
+
+.socio-form-acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+@media (max-width: 600px) {
+  .socio-form {
+    grid-template-columns: 1fr;
+  }
+  .socio-form-fila {
+    grid-template-columns: 1fr;
+  }
+}
+.socio-detalle-foto {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 2px solid var(--color-verde);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-panel);
+  color: var(--color-verde);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.socio-detalle-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.socio-detalle-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+  margin: 0 0 20px;
+}
+
+.socio-detalle-datos dt {
+  color: var(--color-texto-secundario);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.socio-detalle-datos dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+
+.socio-detalle-nota {
+  margin-bottom: 20px;
+}
+
+.socio-detalle-nota h3,
+.socio-detalle-pagos + h3,
+.socio-detalle > h3 {
+  font-size: 0.95rem;
+  color: var(--color-verde);
+  margin: 0 0 10px;
+}
+
+.socio-detalle-nota p {
+  margin: 0;
+  color: var(--color-texto);
+  line-height: 1.5;
+}
+
+.socio-detalle-vacio {
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.socio-detalle-pagos {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pago-chip {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radio-chico);
+  background: var(--color-panel);
+  font-size: 0.88rem;
+}
+
+.pago-chip-registrado {
+  border-left: 3px solid var(--color-verde);
+}
+
+.pago-chip-pendiente {
+  border-left: 3px solid var(--color-alerta);
+}
+
+.pago-chip-proximo {
+  border-left: 3px solid var(--color-advertencia);
+}
+
+.socio-detalle-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

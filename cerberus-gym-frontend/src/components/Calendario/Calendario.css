@@ -1,0 +1,220 @@
+.calendario-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.calendario-titulo {
+  color: var(--color-verde);
+  font-style: italic;
+  font-weight: 800;
+  margin: 0;
+  min-width: 220px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.calendario-flecha {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--color-verde);
+  background: transparent;
+  color: var(--color-verde);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendario-flecha:hover {
+  background: rgba(148, 224, 6, 0.08);
+}
+
+.calendario-grilla {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 4px;
+  /* Alto fijo relativo a la ventana (no al contenedor, que no tiene
+     altura fija) para que las 6 semanas entren siempre sin scroll. */
+  height: calc(100vh - 150px);
+}
+
+.calendario-dia-semana {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 0;
+  background: var(--color-panel-claro);
+  border-radius: var(--radio-chico);
+}
+
+.calendario-celda {
+  position: relative;
+  background: var(--color-panel);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-chico);
+  color: var(--color-texto);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 6px;
+  font-size: 0.78rem;
+  overflow: hidden;
+}
+
+.calendario-celda:disabled {
+  cursor: default;
+}
+
+.calendario-celda-fuera {
+  color: var(--color-texto-secundario);
+  opacity: 0.55;
+}
+
+.calendario-celda-hoy {
+  border-color: var(--color-verde);
+  border-width: 2px;
+}
+
+.calendario-celda-pendiente {
+  background: var(--color-alerta-fondo);
+}
+
+.calendario-celda-proximo {
+  background: var(--color-advertencia-fondo);
+}
+
+.calendario-celda-aviso {
+  background: var(--color-info-fondo);
+}
+
+.calendario-celda-registrado {
+  background: var(--color-verde-fondo);
+}
+
+.calendario-celda-pendiente:hover,
+.calendario-celda-proximo:hover,
+.calendario-celda-aviso:hover,
+.calendario-celda-registrado:hover {
+  filter: brightness(1.15);
+}
+
+.calendario-numero {
+  position: relative;
+  z-index: 1;
+}
+
+.calendario-icono {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0a0a08;
+  z-index: 2;
+}
+
+.calendario-icono-pendiente {
+  background: var(--color-alerta);
+  color: #fff;
+}
+
+.calendario-icono-proximo {
+  background: var(--color-advertencia);
+}
+
+/* Número de socios afectados, centrado en la celda (o en su mitad,
+   cuando el día tiene pendientes Y próximos a la vez). */
+.calendario-conteo-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* División del casillero en dos mitades: roja (pendiente) a la
+   izquierda, amarilla (próximo) a la derecha, cada una con su propio
+   ícono "!" arriba a la derecha y su conteo centrado. */
+.calendario-split {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.calendario-mitad {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendario-mitad-pendiente {
+  background: var(--color-alerta-fondo);
+}
+
+.calendario-mitad-proximo {
+  background: var(--color-advertencia-fondo);
+}
+
+.calendario-mitad-aviso {
+  background: var(--color-info-fondo);
+}
+
+.calendario-mitad-registrado {
+  background: var(--color-verde-fondo);
+}
+
+.calendario-mitad .calendario-icono {
+  top: 4px;
+  right: 4px;
+}
+
+.calendario-conteo {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+.dia-detalle-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dia-detalle-item {
+  padding: 16px 18px;
+  border-radius: var(--radio-chico);
+  font-weight: 600;
+  color: #0a0a08;
+}
+
+.dia-detalle-item-pendiente {
+  background: var(--color-alerta);
+}
+
+.dia-detalle-item-proximo {
+  background: var(--color-advertencia);
+}
+
+.dia-detalle-item-aviso {
+  background: var(--color-info);
+  color: #fff;
+}
+
+.dia-detalle-item-registrado {
+  background: var(--color-verde);
+}

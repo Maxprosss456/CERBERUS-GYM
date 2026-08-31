@@ -1,0 +1,137 @@
+:root {
+  /* Paleta oficial Cerberus GYM */
+  --color-verde: #94e006;
+  --color-verde-oscuro: #6ea604;
+  --color-negro: #000000;
+  --color-panel: #292a27;
+  --color-panel-claro: #35362f;
+  --color-borde: #3a3b36;
+
+  --color-texto: #f2f2f0;
+  --color-texto-secundario: #a6a89f;
+  --color-placeholder: #7a7c74;
+
+  --color-alerta: #ef4444;
+  --color-alerta-fondo: #5c1a1a;
+  --color-advertencia: #eab308;
+  --color-advertencia-fondo: #5c4700;
+
+  --color-info: #3b82f6;
+  --color-info-fondo: #123a66;
+  --color-verde-fondo: #1f5c0a;
+
+  --radio-chico: 8px;
+  --radio-medio: 14px;
+  --radio-grande: 22px;
+
+  --fuente: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-negro);
+  color: var(--color-texto);
+  font-family: var(--fuente);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-verde);
+  outline-offset: 2px;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  background: var(--color-negro);
+  border: 1px solid var(--color-verde-oscuro);
+  border-radius: var(--radio-chico);
+  color: var(--color-texto);
+  padding: 10px 14px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-placeholder);
+}
+
+/* El navegador dibuja el ícono de calendario en negro por defecto;
+   en tema oscuro queda invisible. Lo invertimos para que se vea, y
+   agrandamos su zona de click. */
+input[type="date"] {
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radio-chico);
+  padding: 12px 22px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primario {
+  background: var(--color-verde);
+  color: #0a0a08;
+}
+
+.btn-primario:hover {
+  filter: brightness(1.08);
+}
+
+.btn-secundario {
+  background: transparent;
+  color: var(--color-verde);
+  border: 1px solid var(--color-verde);
+}
+
+.btn-secundario:hover {
+  background: rgba(148, 224, 6, 0.08);
+}
+
+/* Utilidad para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

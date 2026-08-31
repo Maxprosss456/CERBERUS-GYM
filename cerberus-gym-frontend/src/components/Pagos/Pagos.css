@@ -1,0 +1,179 @@
+.pagos-toolbar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.pagos-buscador {
+  flex: 1;
+  background: #fff;
+  color: #111;
+  border-radius: var(--radio-chico);
+  padding: 12px 20px;
+}
+
+.pagos-orden-boton {
+  white-space: nowrap;
+}
+
+.pagos-busqueda-info {
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+  margin: -8px 0 16px;
+}
+
+.pagos-pestanas {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pagos-pestana {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--color-verde);
+  border-radius: var(--radio-medio);
+  padding: 18px;
+  color: var(--color-verde);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.pagos-pestana:hover {
+  background: rgba(148, 224, 6, 0.06);
+}
+
+.pagos-pestana-activa {
+  background: var(--color-verde);
+  color: #0a0a08;
+}
+
+.pagos-pestana-activa:hover {
+  background: var(--color-verde);
+  color: #0a0a08;
+  filter: brightness(1.05);
+}
+
+.pagos-lista {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-medio);
+  overflow: hidden;
+}
+
+.pagos-fila {
+  display: grid;
+  grid-template-columns: 130px 1fr 100px 140px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-borde);
+  background: var(--color-negro);
+}
+
+.pagos-fila:last-child {
+  border-bottom: none;
+}
+
+.pagos-fila-pendiente {
+  background: var(--color-alerta-fondo);
+}
+
+.pagos-fila-proximo {
+  background: var(--color-advertencia-fondo);
+}
+
+.pagos-fecha {
+  font-weight: 700;
+}
+
+.pagos-monto {
+  color: var(--color-texto-secundario);
+}
+
+.pagos-documento {
+  justify-self: end;
+  background: transparent;
+  border: none;
+  color: var(--color-verde);
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.pagos-estado-label {
+  justify-self: end;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.pagos-fila-pendiente .pagos-estado-label {
+  color: var(--color-alerta);
+}
+
+.pagos-fila-proximo .pagos-estado-label {
+  color: var(--color-advertencia);
+}
+
+.pagos-vacio {
+  padding: 24px;
+  color: var(--color-texto-secundario);
+}
+
+.pagos-accion {
+  position: relative;
+  justify-self: end;
+}
+
+.pagos-metodo-boton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+
+.pagos-metodo-boton:hover {
+  filter: brightness(1.2);
+}
+
+.pagos-metodo-info {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagos-metodo-texto {
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.pagos-modificar-boton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-verde);
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+  font-size: 0.9rem;
+}
+
+.pagos-modificar-boton:hover {
+  filter: brightness(1.2);
+}
+
+.pagos-filtro-metodo {
+  position: relative;
+}
+
+.pagos-filtro-opcion-activa {
+  background: var(--color-verde);
+  color: #0a0a08;
+}
+
+.pagos-filtro-opcion-activa:hover {
+  background: var(--color-verde);
+  color: #0a0a08;
+  filter: brightness(1.05);
+}

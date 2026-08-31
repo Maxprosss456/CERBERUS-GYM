@@ -1,0 +1,79 @@
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-caja {
+  width: 100%;
+  background: var(--color-negro);
+  border: 2px solid var(--color-verde);
+  border-radius: var(--radio-grande);
+  padding: 28px 32px 32px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modal-header-arrastrable {
+  cursor: grab;
+  user-select: none;
+}
+
+.modal-header-arrastrable:active {
+  cursor: grabbing;
+}
+
+.modal-titulo {
+  margin: 0;
+  color: var(--color-verde);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.modal-cerrar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-panel);
+  color: var(--color-texto);
+  font-size: 0.9rem;
+}
+
+.modal-cerrar:hover {
+  background: var(--color-panel-claro);
+}
+.confirmar-mensaje {
+  margin: 0 0 24px;
+  line-height: 1.5;
+  color: var(--color-texto);
+}
+
+.confirmar-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.confirmar-boton-peligro {
+  background: var(--color-alerta);
+  color: #fff;
+  border: 1px solid var(--color-alerta);
+}
+
+.confirmar-boton-peligro:hover {
+  background: #fff;
+  color: var(--color-alerta);
+}

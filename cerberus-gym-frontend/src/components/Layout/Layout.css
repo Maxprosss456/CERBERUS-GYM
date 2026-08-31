@@ -1,0 +1,98 @@
+.panel-layout {
+  display: flex;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.panel-contenido {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+.panel-tarjeta {
+  min-height: 100%;
+  background: var(--color-negro);
+  border: 2px solid var(--color-verde);
+  border-radius: var(--radio-grande);
+  padding: 24px;
+}
+.sidebar {
+  width: 230px;
+  min-width: 230px;
+  height: 100%;
+  background: var(--color-negro);
+  border-right: 1px solid var(--color-verde);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px;
+}
+
+.sidebar-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.sidebar-logo {
+  width: 100px;
+  height: auto;
+}
+
+.sidebar-nombre {
+  color: var(--color-verde);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.sidebar-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--color-texto);
+  font-size: 1rem;
+  padding: 12px 16px;
+  border-radius: var(--radio-medio);
+}
+
+.sidebar-item:hover {
+  background: rgba(148, 224, 6, 0.08);
+}
+
+.sidebar-item-activo {
+  background: var(--color-texto);
+  color: #0a0a08;
+  font-weight: 700;
+}
+
+.sidebar-item-activo:hover {
+  background: var(--color-texto);
+}
+
+.sidebar-salir {
+  width: 100%;
+  background: transparent;
+  color: var(--color-verde);
+  border: 1px solid var(--color-verde);
+  border-radius: var(--radio-medio);
+  padding: 12px 16px;
+}
+
+.sidebar-salir:hover {
+  background: rgba(148, 224, 6, 0.08);
+}
