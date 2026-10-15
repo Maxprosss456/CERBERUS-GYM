@@ -116,6 +116,136 @@ export const socios = [
     diaPago: 25,
     precioMensualidad: 15000,
   },
+  {
+    id: "soc_101",
+    nombre: "Martina",
+    apellido: "Suárez",
+    dni: "44100234",
+    telefono: "1122334455",
+    email: "martina.suarez@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2025-11-10",
+    diaPago: 5,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_102",
+    nombre: "Agustín",
+    apellido: "Paredes",
+    dni: "43987654",
+    telefono: "1133445566",
+    email: "agustin.paredes@gmail.com",
+    foto: null,
+    nota: "Prefiere entrenar de mañana.",
+    fechaAlta: "2026-01-15",
+    diaPago: 12,
+    precioMensualidad: 16000,
+  },
+  {
+    id: "soc_103",
+    nombre: "Camila",
+    apellido: "Ibarra",
+    dni: "45230187",
+    telefono: "1144556677",
+    email: "camila.ibarra@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2026-03-02",
+    diaPago: 18,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_104",
+    nombre: "Tomás",
+    apellido: "Acosta",
+    dni: "46310542",
+    telefono: "1155667788",
+    email: "tomas.acosta@gmail.com",
+    foto: null,
+    nota: "Molestia leve en el hombro izquierdo, evitar press militar.",
+    fechaAlta: "2026-04-20",
+    diaPago: 22,
+    precioMensualidad: 17000,
+  },
+  {
+    id: "soc_105",
+    nombre: "Julieta",
+    apellido: "Romero",
+    dni: "47110876",
+    telefono: "1166778899",
+    email: "julieta.romero@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2026-05-05",
+    diaPago: 25,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_106",
+    nombre: "Franco",
+    apellido: "Villalba",
+    dni: "44870321",
+    telefono: "1177889900",
+    email: "franco.villalba@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2026-02-01",
+    diaPago: 27,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_107",
+    nombre: "Abril",
+    apellido: "Giménez",
+    dni: "45620987",
+    telefono: "1188990011",
+    email: "abril.gimenez@gmail.com",
+    foto: null,
+    nota: "Plan de fuerza, 3 veces por semana.",
+    fechaAlta: "2026-06-14",
+    diaPago: 30,
+    precioMensualidad: 16000,
+  },
+  {
+    id: "soc_108",
+    nombre: "Ignacio",
+    apellido: "Cabrera",
+    dni: "46990123",
+    telefono: "1199001122",
+    email: "ignacio.cabrera@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2026-01-28",
+    diaPago: 3,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_109",
+    nombre: "Delfina",
+    apellido: "Ortega",
+    dni: "44500765",
+    telefono: "1100112233",
+    email: "delfina.ortega@gmail.com",
+    foto: null,
+    nota: "",
+    fechaAlta: "2026-07-09",
+    diaPago: 8,
+    precioMensualidad: 15000,
+  },
+  {
+    id: "soc_110",
+    nombre: "Bautista",
+    apellido: "Núñez",
+    dni: "47820456",
+    telefono: "1111223344",
+    email: "bautista.nunez@gmail.com",
+    foto: null,
+    nota: "Socio nuevo, en adaptación.",
+    fechaAlta: "2026-08-01",
+    diaPago: 15,
+    precioMensualidad: 15000,
+  },
 ];
 
 export const pagos = [
@@ -142,4 +272,46 @@ export const pagos = [
   // 27/09 → combo verde + azul (Aviso)
   { id: "pago_007", socioId: "soc_002", monto: 15000, fecha: "2026-09-27", pagado: true, metodo: "Transferencia" },
   { id: "pago_008", socioId: "soc_003", monto: 18000, fecha: "2026-09-27", pagado: false, metodo: null },
+    // ── Martina Suárez (día 5) ──
+  { id: "pago_101", socioId: "soc_101", monto: 15000, fecha: "2026-07-05", pagado: true, metodo: "Efectivo" },
+  { id: "pago_102", socioId: "soc_101", monto: 15000, fecha: "2026-08-05", pagado: true, metodo: "Transferencia" },
+  { id: "pago_103", socioId: "soc_101", monto: 15000, fecha: "2026-09-05", pagado: false, metodo: null }, // Pendiente
+
+  // ── Agustín Paredes (día 12) ──
+  { id: "pago_104", socioId: "soc_102", monto: 16000, fecha: "2026-08-12", pagado: true, metodo: "Efectivo" },
+  { id: "pago_105", socioId: "soc_102", monto: 16000, fecha: "2026-09-12", pagado: false, metodo: null }, // Pendiente
+
+  // ── Camila Ibarra (día 18) ──
+  { id: "pago_106", socioId: "soc_103", monto: 15000, fecha: "2026-08-18", pagado: true, metodo: "Transferencia" },
+  { id: "pago_107", socioId: "soc_103", monto: 15000, fecha: "2026-09-18", pagado: false, metodo: null }, // Pendiente
+
+  // ── Tomás Acosta (día 22) ──
+  { id: "pago_108", socioId: "soc_104", monto: 17000, fecha: "2026-08-22", pagado: true, metodo: "Efectivo" },
+  { id: "pago_109", socioId: "soc_104", monto: 17000, fecha: "2026-09-22", pagado: false, metodo: null }, // Pendiente
+
+  // ── Julieta Romero (día 25) ──
+  { id: "pago_110", socioId: "soc_105", monto: 15000, fecha: "2026-08-25", pagado: true, metodo: "Transferencia" },
+  { id: "pago_111", socioId: "soc_105", monto: 15000, fecha: "2026-09-25", pagado: false, metodo: null }, // Próximo (vence hoy)
+
+  // ── Franco Villalba (día 27) ──
+  { id: "pago_112", socioId: "soc_106", monto: 15000, fecha: "2026-08-27", pagado: true, metodo: "Efectivo" },
+  { id: "pago_113", socioId: "soc_106", monto: 15000, fecha: "2026-09-27", pagado: false, metodo: null }, // Próximo
+
+  // ── Abril Giménez (día 30) ──
+  { id: "pago_114", socioId: "soc_107", monto: 16000, fecha: "2026-08-30", pagado: true, metodo: "Transferencia" },
+  { id: "pago_115", socioId: "soc_107", monto: 16000, fecha: "2026-09-30", pagado: false, metodo: null }, // Próximo
+
+  // ── Ignacio Cabrera (día 3) ──
+  { id: "pago_116", socioId: "soc_108", monto: 15000, fecha: "2026-08-03", pagado: true, metodo: "Efectivo" },
+  { id: "pago_117", socioId: "soc_108", monto: 15000, fecha: "2026-09-03", pagado: true, metodo: "Transferencia" },
+  { id: "pago_118", socioId: "soc_108", monto: 15000, fecha: "2026-10-03", pagado: false, metodo: null }, // Aviso
+
+  // ── Delfina Ortega (día 8) ──
+  { id: "pago_119", socioId: "soc_109", monto: 15000, fecha: "2026-08-08", pagado: true, metodo: "Transferencia" },
+  { id: "pago_120", socioId: "soc_109", monto: 15000, fecha: "2026-09-08", pagado: true, metodo: "Efectivo" },
+  { id: "pago_121", socioId: "soc_109", monto: 15000, fecha: "2026-10-08", pagado: false, metodo: null }, // Aviso
+
+  // ── Bautista Núñez (día 15, socio nuevo) ──
+  { id: "pago_122", socioId: "soc_110", monto: 15000, fecha: "2026-09-15", pagado: true, metodo: "Efectivo" },
+  { id: "pago_123", socioId: "soc_110", monto: 15000, fecha: "2026-10-15", pagado: false, metodo: null }, // Aviso
 ];

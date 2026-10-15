@@ -2,7 +2,12 @@ import { useState } from "react";
 import "./Configuracion.css";
 import { TAMANOS, guardarTamanoFuente, obtenerTamanoFuenteGuardado } from "../../utils/preferencias.js";
 
-export default function Configuracion({ diasAnticipacion, onCambiarDiasAnticipacion }) {
+export default function Configuracion({
+  diasAnticipacion,
+  onCambiarDiasAnticipacion,
+  precioMensualidad,
+  onCambiarPrecioMensualidad,
+}) {
   const [tamanoFuente, setTamanoFuente] = useState(obtenerTamanoFuenteGuardado);
 
   function manejarCambioTamano(indice) {
@@ -31,6 +36,25 @@ export default function Configuracion({ diasAnticipacion, onCambiarDiasAnticipac
                 <span key={t}>{t}</span>
               ))}
             </div>
+          </div>
+        </div>
+
+        <div className="config-fila">
+          <span className="config-label">Precio de la mensualidad</span>
+          <div className="config-dias-anticipacion">
+            <input
+              type="number"
+              min={0}
+              step={500}
+              value={precioMensualidad}
+              onChange={(e) => onCambiarPrecioMensualidad(Number(e.target.value) || 0)}
+              className="config-input-numero"
+            />
+            <p className="config-drive-texto">
+              Este es el precio único que se cobra a todos los socios. Si lo cambiás, los pagos
+              ya generados NO se modifican (mantienen el monto con el que se crearon); el precio
+              nuevo se aplica recién a partir del próximo ciclo de cada socio.
+            </p>
           </div>
         </div>
 

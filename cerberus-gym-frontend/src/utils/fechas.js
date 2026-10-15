@@ -117,3 +117,34 @@ export function resolverFechaVencimiento(pago, socio) {
   const original = parseFechaISO(pago.fecha);
   return fechaVencimientoDelMes(original.getFullYear(), original.getMonth(), socio.diaPago);
 }
+
+/**
+ * Fecha de vencimiento del ciclo SIGUIENTE a una fecha dada: un mes
+ * después, respetando el día fijo de pago del socio.
+ */
+export function fechaVencimientoSiguienteCiclo(fechaISO, diaPago) {
+  const actual = parseFechaISO(fechaISO);
+  let anio = actual.getFullYear();
+  let mes = actual.getMonth() + 1;
+  if (mes > 11) {
+    mes = 0;
+    anio += 1;
+  }
+  return fechaVencimientoDelMes(anio, mes, diaPago);
+}
+
+/**
+ * Fecha de vencimiento de la PRIMERA cuota de un socio nuevo: el
+ * primer día de pago posterior a su fecha de alta. Si el día de pago
+ * cae el mismo día del alta (o antes), ese mes ya se considera
+ * cubierto y se salta directo al mes siguiente.
+ */
+export function fechaVencimientoPrimeraCuota(fechaAltaISO, diaPago) {
+  const alta = parseFechaISO(fechaAltaISO);
+  const candidato = parseFechaISO(fechaVencimientoDelMes(alta.getFullYear(), alta.getMonth(), diaPago));
+
+  if (candidato <= alta) {
+    return fechaVencimientoSiguienteCiclo(fechaLocalISO(candidato), diaPago);
+  }
+  return fechaLocalISO(candidato);
+}

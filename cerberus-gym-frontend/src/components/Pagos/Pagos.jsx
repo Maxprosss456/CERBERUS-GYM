@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import PanelFlotante from "../PanelFlotante.jsx";
+import { MESES } from "../../utils/fechas.js";
 import "./Pagos.css";
 
 const PESTANAS = [
@@ -20,6 +21,18 @@ const OPCIONES_FILTRO_METODO = [
   { id: "Transferencia", label: "Transferencia" },
 ];
 
+/** "2026-09-27" -> "Septiembre 2026" */
+function etiquetaMes(fechaISO) {
+  const [anio, mes] = fechaISO.split("-");
+  const nombreMes = MESES[Number(mes) - 1];
+  return `${nombreMes.charAt(0).toUpperCase()}${nombreMes.slice(1)} ${anio}`;
+}
+
+/** "2026-09-27" -> "2026-09", para comparar si dos fechas son del mismo mes. */
+function claveMes(fechaISO) {
+  return fechaISO.slice(0, 7);
+}
+
 export default function Pagos({ pagos, socios, onRegistrarPago }) {
   const [pestanaActiva, setPestanaActiva] = useState("registrado");
   const [busqueda, setBusqueda] = useState("");
@@ -28,11 +41,7 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
   const [filtroMetodo, setFiltroMetodo] = useState("todos");
   const [panelFiltroAbierto, setPanelFiltroAbierto] = useState(false);
 
-  // Un botón "disparador" por fila (sirve tanto para el botón de
-  // estado en Pendientes/Próximos como para "Modificar" en Registros),
-  // para que el panel flotante de esa fila sepa contra qué anclarse.
   const anchorsRef = useRef({});
-  // Disparador del filtro de método (uno solo, vive en la toolbar).
   const filtroAnchorRef = useRef(null);
 
   const socioPorId = useMemo(() => {
@@ -46,16 +55,11 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
     return socio ? `${socio.nombre} ${socio.apellido}` : "Socio eliminado";
   }
 
-  // El filtro de método solo tiene sentido en Registros (es el único
-  // lugar donde un pago ya tiene un método asignado) y solo cuando no
-  // hay búsqueda activa (la búsqueda ya cruza las 3 pestañas por sí sola).
   const filtroMetodoVisible = pestanaActiva === "registrado" && !busqueda;
 
   const pagosVisibles = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
 
-    // Con búsqueda activa: cruza las 3 pestañas, sin importar cuál esté
-    // seleccionada, así se encuentra al socio esté donde esté.
     let base = termino
       ? pagos.filter((p) => nombreDe(p).toLowerCase().includes(termino))
       : pagos.filter((p) => p.estado === pestanaActiva);
@@ -85,6 +89,21 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
 
   const etiquetaFiltroActivo =
     OPCIONES_FILTRO_METODO.find((o) => o.id === filtroMetodo)?.label ?? "Todos";
+
+  // Se arma SIEMPRE a partir de `pagosVisibles` (la misma lista que ya se
+  // renderiza abajo), así el total nunca puede desincronizarse de las filas
+  // que el dueño está viendo en pantalla. Solo tiene sentido cuando hay un
+  // método puntual elegido (con "Todos" no se muestra nada).
+  const totalesPorMes = useMemo(() => {
+    if (!filtroMetodoVisible || filtroMetodo === "todos") return null;
+    const mapa = new Map();
+    pagosVisibles.forEach((p) => {
+      const clave = claveMes(p.fecha);
+      const anterior = mapa.get(clave) ?? { total: 0, cantidad: 0 };
+      mapa.set(clave, { total: anterior.total + p.monto, cantidad: anterior.cantidad + 1 });
+    });
+    return mapa;
+  }, [pagosVisibles, filtroMetodoVisible, filtroMetodo]);
 
   return (
     <div className="pagos-vista">
@@ -173,67 +192,87 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
         {pagosVisibles.length === 0 ? (
           <p className="pagos-vacio">No hay pagos para mostrar.</p>
         ) : (
-          pagosVisibles.map((pago) => (
-            <div key={pago.id} className={`pagos-fila pagos-fila-${pago.estado}`}>
-              <span className="pagos-fecha">{pago.fecha}</span>
-              <span className="pagos-nombre">{nombreDe(pago)}</span>
-              <span className="pagos-monto">${pago.monto.toLocaleString("es-AR")}</span>
+          pagosVisibles.map((pago, indice) => {
+            const mesActual = claveMes(pago.fecha);
+            const mesAnterior = indice > 0 ? claveMes(pagosVisibles[indice - 1].fecha) : null;
+            const mostrarSeparador = mesActual !== mesAnterior;
 
-              <div className="pagos-accion">
-                {pago.estado === "registrado" ? (
-                  <div className="pagos-metodo-info">
-                    <span className="pagos-metodo-texto">{pago.metodo}</span>
-                    <button
-                      ref={(el) => {
-                        anchorsRef.current[pago.id] = el;
-                      }}
-                      className="pagos-modificar-boton"
-                      onClick={() => alternarPanel(pago.id)}
-                    >
-                      Modificar
-                    </button>
+            return (
+              <Fragment key={pago.id}>
+                {mostrarSeparador && (
+                  <div className="pagos-separador-mes">
+                    <span>{etiquetaMes(pago.fecha)}</span>
+                    {totalesPorMes?.has(mesActual) && (
+                      <span className="pagos-separador-total">
+                        ${totalesPorMes.get(mesActual).total.toLocaleString("es-AR")} ·{" "}
+                        {totalesPorMes.get(mesActual).cantidad}{" "}
+                        {totalesPorMes.get(mesActual).cantidad === 1 ? "pago" : "pagos"}
+                      </span>
+                    )}
                   </div>
-                ) : (
-                  <button
-                    ref={(el) => {
-                      anchorsRef.current[pago.id] = el;
-                    }}
-                    className="pagos-estado-label pagos-metodo-boton"
-                    onClick={() => alternarPanel(pago.id)}
-                  >
-                    {ETIQUETA_ESTADO[pago.estado]}
-                  </button>
                 )}
+                <div className={`pagos-fila pagos-fila-${pago.estado}`}>
+                  <span className="pagos-fecha">{pago.fecha}</span>
+                  <span className="pagos-nombre">{nombreDe(pago)}</span>
+                  <span className="pagos-monto">${pago.monto.toLocaleString("es-AR")}</span>
 
-                {panelMetodoId === pago.id && (
-                  <PanelFlotante
-                    anchorRef={{ current: anchorsRef.current[pago.id] }}
-                    onCerrar={() => setPanelMetodoId(null)}
-                  >
-                    <p className="panel-flotante-titulo">
-                      {pago.estado === "registrado"
-                        ? "Corregir método de pago"
-                        : "Registrar método de pago"}
-                    </p>
-                    <div className="panel-flotante-opciones">
+                  <div className="pagos-accion">
+                    {pago.estado === "registrado" ? (
+                      <div className="pagos-metodo-info">
+                        <span className="pagos-metodo-texto">{pago.metodo}</span>
+                        <button
+                          ref={(el) => {
+                            anchorsRef.current[pago.id] = el;
+                          }}
+                          className="pagos-modificar-boton"
+                          onClick={() => alternarPanel(pago.id)}
+                        >
+                          Modificar
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        className="btn btn-secundario"
-                        onClick={() => manejarElegirMetodo(pago.id, "Efectivo")}
+                        ref={(el) => {
+                          anchorsRef.current[pago.id] = el;
+                        }}
+                        className="pagos-estado-label pagos-metodo-boton"
+                        onClick={() => alternarPanel(pago.id)}
                       >
-                        Efectivo
+                        {ETIQUETA_ESTADO[pago.estado]}
                       </button>
-                      <button
-                        className="btn btn-secundario"
-                        onClick={() => manejarElegirMetodo(pago.id, "Transferencia")}
+                    )}
+
+                    {panelMetodoId === pago.id && (
+                      <PanelFlotante
+                        anchorRef={{ current: anchorsRef.current[pago.id] }}
+                        onCerrar={() => setPanelMetodoId(null)}
                       >
-                        Transferencia
-                      </button>
-                    </div>
-                  </PanelFlotante>
-                )}
-              </div>
-            </div>
-          ))
+                        <p className="panel-flotante-titulo">
+                          {pago.estado === "registrado"
+                            ? "Corregir método de pago"
+                            : "Registrar método de pago"}
+                        </p>
+                        <div className="panel-flotante-opciones">
+                          <button
+                            className="btn btn-secundario"
+                            onClick={() => manejarElegirMetodo(pago.id, "Efectivo")}
+                          >
+                            Efectivo
+                          </button>
+                          <button
+                            className="btn btn-secundario"
+                            onClick={() => manejarElegirMetodo(pago.id, "Transferencia")}
+                          >
+                            Transferencia
+                          </button>
+                        </div>
+                      </PanelFlotante>
+                    )}
+                  </div>
+                </div>
+              </Fragment>
+            );
+          })
         )}
       </div>
     </div>

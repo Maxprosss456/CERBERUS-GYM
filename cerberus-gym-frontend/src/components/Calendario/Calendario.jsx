@@ -72,15 +72,11 @@ export default function Calendario({ pagos, socios }) {
   return (
     <div className="calendario-vista">
       <div className="calendario-header">
-        <button className="calendario-flecha" onClick={irMesAnterior} aria-label="Mes anterior">
-          ‹
-        </button>
+        <button className="calendario-flecha" onClick={irMesAnterior} aria-label="Mes anterior"> ‹ </button>
         <h2 className="calendario-titulo">
           {capitalizar(MESES[mes])} - {anio}
         </h2>
-        <button className="calendario-flecha" onClick={irMesSiguiente} aria-label="Mes siguiente">
-          ›
-        </button>
+        <button className="calendario-flecha" onClick={irMesSiguiente} aria-label="Mes siguiente"> › </button>
       </div>
 
       <div className="calendario-grilla">

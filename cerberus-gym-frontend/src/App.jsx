@@ -6,10 +6,10 @@ import Pagos from "./components/Pagos/Pagos.jsx";
 import Calendario from "./components/Calendario/Calendario.jsx";
 import Configuracion from "./components/Configuracion/Configuracion.jsx";
 import { crearSocio, obtenerSocios, actualizarSocio } from "./data/socios.js";
-import { obtenerPagos, registrarPago } from "./data/pagos.js";
+import { obtenerPagos, registrarPago, crearPago, armarPagoInicial, armarPagoSiguienteCiclo } from "./data/pagos.js";
 import { resolverFechaVencimiento } from "./utils/fechas.js";
 import { conEstadoCalculado } from "./utils/estadoPago.js";
-import { obtenerDiasAnticipacionGuardado, guardarDiasAnticipacion } from "./utils/preferencias.js";
+import { obtenerDiasAnticipacionGuardado, guardarDiasAnticipacion, obtenerPrecioMensualidadGuardado, guardarPrecioMensualidad, } from "./utils/preferencias.js";
 
 export default function App() {
   const [autenticado, setAutenticado] = useState(false);
@@ -19,6 +19,7 @@ export default function App() {
   const [pagosBase, setPagosBase] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [diasAnticipacion, setDiasAnticipacion] = useState(obtenerDiasAnticipacionGuardado);
+  const [precioMensualidad, setPrecioMensualidad] = useState(obtenerPrecioMensualidadGuardado);
 
   useEffect(() => {
     if (!autenticado) return;
@@ -53,9 +54,19 @@ export default function App() {
     guardarDiasAnticipacion(dias);
   }
 
+  function manejarCambiarPrecioMensualidad(precio) {
+    setPrecioMensualidad(precio);
+    guardarPrecioMensualidad(precio);
+  }
+
   async function manejarAgregarSocio(datosForm) {
     const nuevo = await crearSocio(datosForm);
     setSocios((prev) => [...prev, nuevo]);
+
+    // Cada socio nuevo arranca con su primera cuota ya generada,
+    // así aparece solo en Calendario/Pagos sin que nadie la cargue a mano.
+    const pagoInicial = await crearPago(armarPagoInicial(nuevo, precioMensualidad));
+    setPagosBase((prev) => [...prev, pagoInicial]);
   }
 
   async function manejarEditarSocio(id, cambios) {
@@ -68,8 +79,22 @@ export default function App() {
   }
 
   async function manejarRegistrarPago(id, metodo) {
+    const pagoAnterior = pagosBase.find((p) => p.id === id);
     const actualizado = await registrarPago(id, metodo);
     setPagosBase((prev) => prev.map((p) => (p.id === id ? { ...p, ...actualizado } : p)));
+
+    // Solo generamos el ciclo siguiente la PRIMERA vez que se marca como
+    // pagado. Si ya estaba pagado y esto vino de "Modificar" en Registros
+    // (corregir el método), no hay que generar una cuota de más.
+    if (pagoAnterior && !pagoAnterior.pagado) {
+      const socio = socios.find((s) => s.id === pagoAnterior.socioId);
+      if (socio) {
+        const pagoSiguiente = await crearPago(
+          armarPagoSiguienteCiclo({ ...pagoAnterior, ...actualizado }, socio, precioMensualidad)
+        );
+        setPagosBase((prev) => [...prev, pagoSiguiente]);
+      }
+    }
   }
 
   if (!autenticado) {
@@ -103,6 +128,8 @@ export default function App() {
             <Configuracion
               diasAnticipacion={diasAnticipacion}
               onCambiarDiasAnticipacion={manejarCambiarDiasAnticipacion}
+              precioMensualidad={precioMensualidad}
+              onCambiarPrecioMensualidad={manejarCambiarPrecioMensualidad}
             />
           )}
         </>

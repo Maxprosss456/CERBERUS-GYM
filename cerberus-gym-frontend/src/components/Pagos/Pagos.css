@@ -177,3 +177,31 @@
   color: #0a0a08;
   filter: brightness(1.05);
 }
+
+.pagos-separador-mes {
+  padding: 14px 4px 8px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-verde);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.pagos-separador-mes:first-child {
+  margin-top: 0;
+}
+
+.pagos-separador-mes {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.pagos-separador-total {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+}

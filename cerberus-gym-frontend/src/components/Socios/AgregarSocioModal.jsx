@@ -14,7 +14,6 @@ const SOCIO_VACIO = {
   foto: null,
   fechaAlta: fechaLocalISO(),
   diaPago: "",
-  precioMensualidad: "",
 };
 
 /**
@@ -148,30 +147,17 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
             </label>
           </div>
 
-          <div className="socio-form-fila">
-            <label>
-              Día de pago fijo (1-31)
-              <input
-                type="number"
-                min={1}
-                max={31}
-                value={form.diaPago}
-                onChange={(e) => actualizarCampo("diaPago", e.target.value)}
-                placeholder="Ej: 25"
-              />
-            </label>
-            <label>
-              Precio de la mensualidad
-              <input
-                type="number"
-                min={0}
-                step={500}
-                value={form.precioMensualidad}
-                onChange={(e) => actualizarCampo("precioMensualidad", e.target.value)}
-                placeholder="Ej: 15000"
-              />
-            </label>
-          </div>
+          <label className="socio-form-campo-ancho">
+            Día de pago fijo (1-31)
+            <input
+              type="number"
+              min={1}
+              max={31}
+              value={form.diaPago}
+              onChange={(e) => actualizarCampo("diaPago", e.target.value)}
+              placeholder="Ej: 25"
+            />
+          </label>
 
           <label className="socio-form-campo-ancho">
             Nota / Descripción del socio

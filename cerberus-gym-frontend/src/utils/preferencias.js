@@ -32,3 +32,15 @@ export function obtenerDiasAnticipacionGuardado() {
 export function guardarDiasAnticipacion(dias) {
   localStorage.setItem(CLAVE_DIAS_ANTICIPACION, String(dias));
 }
+
+const CLAVE_PRECIO_MENSUALIDAD = "cerberus_gym_precio_mensualidad";
+export const PRECIO_MENSUALIDAD_DEFECTO = 15000;
+
+export function obtenerPrecioMensualidadGuardado() {
+  const guardado = Number(localStorage.getItem(CLAVE_PRECIO_MENSUALIDAD));
+  return Number.isFinite(guardado) && guardado > 0 ? guardado : PRECIO_MENSUALIDAD_DEFECTO;
+}
+
+export function guardarPrecioMensualidad(precio) {
+  localStorage.setItem(CLAVE_PRECIO_MENSUALIDAD, String(precio));
+}
