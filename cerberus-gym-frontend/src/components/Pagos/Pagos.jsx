@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useRef, useState } from "react";
 import PanelFlotante from "../PanelFlotante.jsx";
 import { MESES } from "../../utils/fechas.js";
+import { partesDelPago } from "../../utils/metodosPago.js";
 import "./Pagos.css";
 
 const PESTANAS = [
@@ -33,13 +34,15 @@ function claveMes(fechaISO) {
   return fechaISO.slice(0, 7);
 }
 
-export default function Pagos({ pagos, socios, onRegistrarPago }) {
+export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }) {
   const [pestanaActiva, setPestanaActiva] = useState("registrado");
   const [busqueda, setBusqueda] = useState("");
-  const [orden, setOrden] = useState("asc"); // "asc" | "desc"
+  const [orden, setOrden] = useState("desc"); // "asc" | "desc"
   const [panelMetodoId, setPanelMetodoId] = useState(null);
   const [filtroMetodo, setFiltroMetodo] = useState("todos");
   const [panelFiltroAbierto, setPanelFiltroAbierto] = useState(false);
+  const [modoMixto, setModoMixto] = useState(false);
+  const [montoEfectivo, setMontoEfectivo] = useState("");
 
   const anchorsRef = useRef({});
   const filtroAnchorRef = useRef(null);
@@ -65,7 +68,7 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
       : pagos.filter((p) => p.estado === pestanaActiva);
 
     if (filtroMetodoVisible && filtroMetodo !== "todos") {
-      base = base.filter((p) => p.metodo === filtroMetodo);
+      base = base.filter((p) => partesDelPago(p).some((parte) => parte.metodo === filtroMetodo));
     }
 
     const factor = orden === "asc" ? 1 : -1;
@@ -73,13 +76,94 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagos, pestanaActiva, busqueda, orden, socioPorId, filtroMetodo, filtroMetodoVisible]);
 
+  function cerrarPanel() {
+    setPanelMetodoId(null);
+    setModoMixto(false);
+    setMontoEfectivo("");
+  }
+
   function manejarElegirMetodo(pagoId, metodo) {
     onRegistrarPago(pagoId, metodo);
-    setPanelMetodoId(null);
+    cerrarPanel();
+  }
+
+  function manejarDeshacer(pagoId) {
+    onDeshacerPago(pagoId);
+    cerrarPanel();
   }
 
   function alternarPanel(pagoId) {
+    setModoMixto(false);
+    setMontoEfectivo("");
     setPanelMetodoId((prev) => (prev === pagoId ? null : pagoId));
+  }
+
+  function abrirMixto(pago) {
+    // Si el pago ya era mixto, precarga el efectivo que tenía.
+    const partes = partesDelPago(pago);
+    const efectivo = partes.length > 1 ? partes.find((p) => p.metodo === "Efectivo") : null;
+    setMontoEfectivo(efectivo ? String(efectivo.monto) : "");
+    setModoMixto(true);
+  }
+
+  function calcularMixto(pago) {
+    const efectivo = Number(montoEfectivo);
+    const valido = Number.isInteger(efectivo) && efectivo > 0 && efectivo < pago.monto;
+    let aviso = "";
+    if (montoEfectivo !== "" && !valido) {
+      aviso =
+        efectivo >= pago.monto
+          ? "Si pagó todo en efectivo, usá el botón Efectivo."
+          : "Ingresá un monto en efectivo mayor a 0 y menor al total.";
+    }
+    return { valido, efectivo, resto: valido ? pago.monto - efectivo : null, aviso };
+  }
+
+  function confirmarMixto(pago) {
+    const { valido, efectivo, resto } = calcularMixto(pago);
+    if (!valido) return;
+    onRegistrarPago(pago.id, "Mixto", [
+      { metodo: "Efectivo", monto: efectivo },
+      { metodo: "Transferencia", monto: resto },
+    ]);
+    cerrarPanel();
+  }
+
+  function renderFormMixto(pago) {
+    const { valido, resto, aviso } = calcularMixto(pago);
+    return (
+      <>
+        <p className="panel-flotante-titulo">Pago mixto</p>
+        <p className="pagos-mixto-total">Total a pagar: ${pago.monto.toLocaleString("es-AR")}</p>
+        <label className="pagos-mixto-campo">
+          Pagó en efectivo
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={montoEfectivo}
+            onChange={(e) => setMontoEfectivo(e.target.value.replace(/\D/g, ""))}
+            onKeyDown={(e) => e.key === "Enter" && confirmarMixto(pago)}
+            placeholder="Ej: 30000"
+            autoFocus
+          />
+        </label>
+        {valido && (
+          <p className="pagos-mixto-resto">
+            Resto por transferencia: ${resto.toLocaleString("es-AR")}
+          </p>
+        )}
+        {aviso && <p className="pagos-mixto-aviso">{aviso}</p>}
+        <div className="panel-flotante-opciones">
+          <button className="btn btn-primario" disabled={!valido} onClick={() => confirmarMixto(pago)}>
+            Confirmar
+          </button>
+          <button className="btn btn-secundario" onClick={() => setModoMixto(false)}>
+            Volver
+          </button>
+        </div>
+      </>
+    );
   }
 
   function manejarElegirFiltro(metodoId) {
@@ -100,7 +184,10 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
     pagosVisibles.forEach((p) => {
       const clave = claveMes(p.fecha);
       const anterior = mapa.get(clave) ?? { total: 0, cantidad: 0 };
-      mapa.set(clave, { total: anterior.total + p.monto, cantidad: anterior.cantidad + 1 });
+      const montoDelMetodo = partesDelPago(p)
+        .filter((parte) => parte.metodo === filtroMetodo)
+        .reduce((acc, parte) => acc + parte.monto, 0);
+      mapa.set(clave, { total: anterior.total + montoDelMetodo, cantidad: anterior.cantidad + 1 });
     });
     return mapa;
   }, [pagosVisibles, filtroMetodoVisible, filtroMetodo]);
@@ -219,7 +306,15 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
                   <div className="pagos-accion">
                     {pago.estado === "registrado" ? (
                       <div className="pagos-metodo-info">
-                        <span className="pagos-metodo-texto">{pago.metodo}</span>
+                        <span className="pagos-metodo-texto">
+                          {partesDelPago(pago).map((parte, i, arr) => (
+                            <span key={parte.metodo}>
+                              {arr.length > 1
+                                ? `${parte.metodo} $${parte.monto.toLocaleString("es-AR")}`
+                                : parte.metodo}
+                            </span>
+                          ))}
+                        </span>
                         <button
                           ref={(el) => {
                             anchorsRef.current[pago.id] = el;
@@ -245,27 +340,47 @@ export default function Pagos({ pagos, socios, onRegistrarPago }) {
                     {panelMetodoId === pago.id && (
                       <PanelFlotante
                         anchorRef={{ current: anchorsRef.current[pago.id] }}
-                        onCerrar={() => setPanelMetodoId(null)}
+                        onCerrar={cerrarPanel}
                       >
-                        <p className="panel-flotante-titulo">
-                          {pago.estado === "registrado"
-                            ? "Corregir método de pago"
-                            : "Registrar método de pago"}
-                        </p>
-                        <div className="panel-flotante-opciones">
-                          <button
-                            className="btn btn-secundario"
-                            onClick={() => manejarElegirMetodo(pago.id, "Efectivo")}
-                          >
-                            Efectivo
-                          </button>
-                          <button
-                            className="btn btn-secundario"
-                            onClick={() => manejarElegirMetodo(pago.id, "Transferencia")}
-                          >
-                            Transferencia
-                          </button>
-                        </div>
+                        {modoMixto ? (
+                          renderFormMixto(pago)
+                        ) : (
+                          <>
+                            <p className="panel-flotante-titulo">
+                              {pago.estado === "registrado"
+                                ? "Corregir método de pago"
+                                : "Registrar método de pago"}
+                            </p>
+                            <div className="panel-flotante-opciones">
+                              <button
+                                className="btn btn-secundario"
+                                onClick={() => manejarElegirMetodo(pago.id, "Efectivo")}
+                              >
+                                Efectivo
+                              </button>
+                              <button
+                                className="btn btn-secundario"
+                                onClick={() => manejarElegirMetodo(pago.id, "Transferencia")}
+                              >
+                                Transferencia
+                              </button>
+                              <button
+                                className="btn btn-secundario"
+                                onClick={() => abrirMixto(pago)}
+                              >
+                                Pago mixto
+                              </button>
+                              {pago.estado === "registrado" && (
+                                <button
+                                  className="btn confirmar-boton-peligro"
+                                  onClick={() => manejarDeshacer(pago.id)}
+                                >
+                                  Deshacer pago
+                                </button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </PanelFlotante>
                     )}
                   </div>

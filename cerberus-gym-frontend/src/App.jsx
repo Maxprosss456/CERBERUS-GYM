@@ -6,7 +6,7 @@ import Pagos from "./components/Pagos/Pagos.jsx";
 import Calendario from "./components/Calendario/Calendario.jsx";
 import Configuracion from "./components/Configuracion/Configuracion.jsx";
 import { crearSocio, obtenerSocios, actualizarSocio } from "./data/socios.js";
-import { obtenerPagos, registrarPago, crearPago, armarPagoInicial, armarPagoSiguienteCiclo } from "./data/pagos.js";
+import { obtenerPagos, registrarPago, crearPago, deshacerPago, eliminarPago, armarPagoInicial, armarPagoSiguienteCiclo } from "./data/pagos.js";
 import { resolverFechaVencimiento } from "./utils/fechas.js";
 import { conEstadoCalculado } from "./utils/estadoPago.js";
 import { obtenerDiasAnticipacionGuardado, guardarDiasAnticipacion, obtenerPrecioMensualidadGuardado, guardarPrecioMensualidad, } from "./utils/preferencias.js";
@@ -78,9 +78,9 @@ export default function App() {
     setSocios((prev) => prev.filter((s) => s.id !== id));
   }
 
-  async function manejarRegistrarPago(id, metodo) {
+  async function manejarRegistrarPago(id, metodo, partes = null) {
     const pagoAnterior = pagosBase.find((p) => p.id === id);
-    const actualizado = await registrarPago(id, metodo);
+    const actualizado = await registrarPago(id, metodo, partes);
     setPagosBase((prev) => prev.map((p) => (p.id === id ? { ...p, ...actualizado } : p)));
 
     // Solo generamos el ciclo siguiente la PRIMERA vez que se marca como
@@ -95,6 +95,26 @@ export default function App() {
         setPagosBase((prev) => [...prev, pagoSiguiente]);
       }
     }
+  }
+  async function manejarDeshacerPago(id) {
+    const pago = pagosBase.find((p) => p.id === id);
+    if (!pago || !pago.pagado) return;
+
+    // Cuota del mes siguiente del mismo socio (la que se generó sola al pagar)
+    const siguiente = pagosBase
+      .filter((p) => p.socioId === pago.socioId && p.fecha > pago.fecha)
+      .sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
+
+    const idAEliminar = siguiente && !siguiente.pagado ? siguiente.id : null;
+
+    const actualizado = await deshacerPago(id);
+    if (idAEliminar) await eliminarPago(idAEliminar);
+
+    setPagosBase((prev) =>
+      prev
+        .filter((p) => p.id !== idAEliminar)
+        .map((p) => (p.id === id ? { ...p, ...actualizado } : p))
+    );
   }
 
   if (!autenticado) {
@@ -121,7 +141,7 @@ export default function App() {
             />
           )}
           {vistaActiva === "pagos" && (
-            <Pagos pagos={pagos} socios={socios} onRegistrarPago={manejarRegistrarPago} />
+            <Pagos pagos={pagos} socios={socios} onRegistrarPago={manejarRegistrarPago} onDeshacerPago={manejarDeshacerPago} />
           )}
           {vistaActiva === "calendario" && <Calendario pagos={pagos} socios={socios} />}
           {vistaActiva === "configuracion" && (

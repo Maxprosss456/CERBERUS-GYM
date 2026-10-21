@@ -7,15 +7,23 @@ export async function obtenerPagos() {
   return Promise.resolve(pagosMock);
 }
 
-export async function registrarPago(id, metodo) {
-  // mock: simula un PUT/PATCH del backend, devolviendo el objeto ya mergeado
-  // (misma convención que actualizarSocio en data/socios.js).
-  return Promise.resolve({ id, pagado: true, metodo });
+export async function registrarPago(id, metodo, partes = null) {
+  // mock: simula un PATCH del backend. `partes` solo viene en pagos mixtos.
+  return Promise.resolve({ id, pagado: true, metodo, partes });
 }
 
 export async function crearPago(pago) {
   // mock: simula el POST del backend, devolviendo el pago ya con id.
   return Promise.resolve({ id: `pago_${Date.now()}`, ...pago });
+}
+
+export async function deshacerPago(id) {
+  return Promise.resolve({ id, pagado: false, metodo: null, partes: null });
+}
+
+export async function eliminarPago(id) {
+  // mock: simula borrar un pago en el backend
+  return Promise.resolve(id);
 }
 
 export function armarPagoInicial(socio, precioMensualidad) {

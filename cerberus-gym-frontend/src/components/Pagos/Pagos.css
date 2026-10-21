@@ -63,7 +63,7 @@
 
 .pagos-fila {
   display: grid;
-  grid-template-columns: 130px 1fr 100px 140px;
+  grid-template-columns: 130px 1fr 100px 270px;
   align-items: center;
   gap: 12px;
   padding: 14px 18px;
@@ -142,6 +142,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
 }
 
 .pagos-metodo-texto {
@@ -204,4 +205,38 @@
   letter-spacing: normal;
   font-weight: 600;
   color: var(--color-texto-secundario);
+}
+
+.pagos-metodo-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.3;
+}
+
+.pagos-mixto-total {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+}
+
+.pagos-mixto-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: var(--color-texto-secundario);
+}
+
+.pagos-mixto-resto {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--color-verde);
+}
+
+.pagos-mixto-aviso {
+  margin: 0 0 10px;
+  max-width: 220px;
+  font-size: 0.8rem;
+  color: var(--color-advertencia);
 }
