@@ -24,3 +24,8 @@ export async function actualizarSocio(id, cambios) {
   // mock: simula un PUT/PATCH del backend, devolviendo el objeto ya mergeado.
   return Promise.resolve({ id, ...cambios });
 }
+
+export async function eliminarSocio(id) {
+  // mock: sin persistencia. Con backend: DELETE /api/socios/:id
+  return Promise.resolve(id);
+}

@@ -1,5 +1,6 @@
 import { Fragment, useMemo, useRef, useState } from "react";
 import PanelFlotante from "../PanelFlotante.jsx";
+import { useDatos } from "../../context/datosContext.jsx";
 import { MESES } from "../../utils/fechas.js";
 import { partesDelPago } from "../../utils/metodosPago.js";
 import "./Pagos.css";
@@ -34,7 +35,8 @@ function claveMes(fechaISO) {
   return fechaISO.slice(0, 7);
 }
 
-export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }) {
+export default function Pagos() {
+  const { pagos, socios, registrarPago, deshacerPago } = useDatos();
   const [pestanaActiva, setPestanaActiva] = useState("registrado");
   const [busqueda, setBusqueda] = useState("");
   const [orden, setOrden] = useState("desc"); // "asc" | "desc"
@@ -43,6 +45,7 @@ export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }
   const [panelFiltroAbierto, setPanelFiltroAbierto] = useState(false);
   const [modoMixto, setModoMixto] = useState(false);
   const [montoEfectivo, setMontoEfectivo] = useState("");
+  const [error, setError] = useState("");
 
   const anchorsRef = useRef({});
   const filtroAnchorRef = useRef(null);
@@ -82,15 +85,40 @@ export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }
     setMontoEfectivo("");
   }
 
-  function manejarElegirMetodo(pagoId, metodo) {
-    onRegistrarPago(pagoId, metodo);
+  async function manejarElegirMetodo(pagoId, metodo) {
+  try {
+    setError("");
+    await registrarPago(pagoId, metodo);
     cerrarPanel();
+  } catch {
+    setError("No se pudo registrar el pago. Intentá de nuevo.");
   }
+}
 
-  function manejarDeshacer(pagoId) {
-    onDeshacerPago(pagoId);
+async function manejarDeshacer(pagoId) {
+  try {
+    setError("");
+    await deshacerPago(pagoId);
     cerrarPanel();
+  } catch {
+    setError("No se pudo deshacer el pago. Intentá de nuevo.");
   }
+}
+
+async function confirmarMixto(pago) {
+  const { valido, efectivo, resto } = calcularMixto(pago);
+  if (!valido) return;
+  try {
+    setError("");
+    await registrarPago(pago.id, "Mixto", [
+      { metodo: "Efectivo", monto: efectivo },
+      { metodo: "Transferencia", monto: resto },
+    ]);
+    cerrarPanel();
+  } catch {
+    setError("No se pudo registrar el pago mixto. Intentá de nuevo.");
+  }
+}
 
   function alternarPanel(pagoId) {
     setModoMixto(false);
@@ -117,16 +145,6 @@ export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }
           : "Ingresá un monto en efectivo mayor a 0 y menor al total.";
     }
     return { valido, efectivo, resto: valido ? pago.monto - efectivo : null, aviso };
-  }
-
-  function confirmarMixto(pago) {
-    const { valido, efectivo, resto } = calcularMixto(pago);
-    if (!valido) return;
-    onRegistrarPago(pago.id, "Mixto", [
-      { metodo: "Efectivo", monto: efectivo },
-      { metodo: "Transferencia", monto: resto },
-    ]);
-    cerrarPanel();
   }
 
   function renderFormMixto(pago) {
@@ -274,7 +292,12 @@ export default function Pagos({ pagos, socios, onRegistrarPago, onDeshacerPago }
           Mostrando resultados de "{busqueda}" en las 3 secciones.
         </p>
       )}
-
+      {error && (
+        <p className="pagos-error" role="alert">
+          {error}
+        </p>
+      )}
+      
       <div className="pagos-lista">
         {pagosVisibles.length === 0 ? (
           <p className="pagos-vacio">No hay pagos para mostrar.</p>

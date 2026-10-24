@@ -1,13 +1,16 @@
 import { useState } from "react";
 import "./Configuracion.css";
 import { TAMANOS, guardarTamanoFuente, obtenerTamanoFuenteGuardado } from "../../utils/preferencias.js";
+import { usePreferencias } from "../../context/preferenciasContext.jsx";
 
-export default function Configuracion({
-  diasAnticipacion,
-  onCambiarDiasAnticipacion,
-  precioMensualidad,
-  onCambiarPrecioMensualidad,
-}) {
+export default function Configuracion() {
+  const {
+    diasAnticipacion,
+    cambiarDiasAnticipacion,
+    precioMensualidad,
+    cambiarPrecioMensualidad,
+  } = usePreferencias();
+
   const [tamanoFuente, setTamanoFuente] = useState(obtenerTamanoFuenteGuardado);
 
   function manejarCambioTamano(indice) {
@@ -47,7 +50,7 @@ export default function Configuracion({
               min={0}
               step={500}
               value={precioMensualidad}
-              onChange={(e) => onCambiarPrecioMensualidad(Number(e.target.value) || 0)}
+              onChange={(e) => cambiarPrecioMensualidad(Number(e.target.value) || 0)}
               className="config-input-numero"
             />
             <p className="config-drive-texto">
@@ -66,7 +69,7 @@ export default function Configuracion({
               min={1}
               max={60}
               value={diasAnticipacion}
-              onChange={(e) => onCambiarDiasAnticipacion(Number(e.target.value) || 1)}
+              onChange={(e) => cambiarDiasAnticipacion(Number(e.target.value) || 1)}
               className="config-input-numero"
             />
             <p className="config-drive-texto">

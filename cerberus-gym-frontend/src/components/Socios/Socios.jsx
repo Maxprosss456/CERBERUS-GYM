@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react";
+import { useDatos } from "../../context/datosContext.jsx";
 import SocioCard from "./SocioCard.jsx";
 import AgregarSocioModal from "./AgregarSocioModal.jsx";
 import SocioDetalleModal from "./SocioDetalleModal.jsx";
 import "./Socios.css";
 
-export default function Socios({ socios, pagos, onAgregarSocio, onEditarSocio, onEliminarSocio }) {
+export default function Socios() {
+  const { socios, pagos, agregarSocio, editarSocio, eliminarSocio } = useDatos();
+
   const [busqueda, setBusqueda] = useState("");
   const [mostrarAlta, setMostrarAlta] = useState(false);
   const [socioSeleccionado, setSocioSeleccionado] = useState(null);
   const [socioEnEdicion, setSocioEnEdicion] = useState(null);
+  const [error, setError] = useState("");
 
   const sociosFiltrados = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
@@ -18,20 +22,35 @@ export default function Socios({ socios, pagos, onAgregarSocio, onEditarSocio, o
     );
   }, [socios, busqueda]);
 
-  function manejarGuardarAlta(nuevoSocio) {
-    onAgregarSocio(nuevoSocio);
-    setMostrarAlta(false);
+  async function manejarGuardarAlta(nuevoSocio) {
+    try {
+      setError("");
+      await agregarSocio(nuevoSocio);
+      setMostrarAlta(false);
+    } catch {
+      setError("No se pudo guardar el socio. Intentá de nuevo.");
+    }
   }
 
-  function manejarGuardarEdicion(datosForm) {
-    onEditarSocio(socioEnEdicion.id, datosForm);
-    setSocioSeleccionado({ ...socioEnEdicion, ...datosForm });
-    setSocioEnEdicion(null);
+  async function manejarGuardarEdicion(datosForm) {
+    try {
+      setError("");
+      await editarSocio(socioEnEdicion.id, datosForm);
+      setSocioSeleccionado({ ...socioEnEdicion, ...datosForm });
+      setSocioEnEdicion(null);
+    } catch {
+      setError("No se pudieron guardar los cambios. Intentá de nuevo.");
+    }
   }
 
-  function manejarEliminar(id) {
-    onEliminarSocio(id);
-    setSocioSeleccionado(null);
+  async function manejarEliminar(id) {
+    try {
+      setError("");
+      await eliminarSocio(id);
+      setSocioSeleccionado(null);
+    } catch {
+      setError("No se pudo eliminar el socio. Intentá de nuevo.");
+    }
   }
 
   function manejarEditar(socio) {
@@ -53,6 +72,12 @@ export default function Socios({ socios, pagos, onAgregarSocio, onEditarSocio, o
           + Agregar Nuevo Socio
         </button>
       </div>
+
+      {error && (
+        <p className="socios-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {sociosFiltrados.length === 0 ? (
         <p className="socios-vacio">No se encontraron socios con ese criterio.</p>

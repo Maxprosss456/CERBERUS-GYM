@@ -1,5 +1,7 @@
+import { NavLink } from "react-router-dom";
 import "./Layout.css";
 import logo from "../../assets/logo-cerberus.png";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const ITEMS = [
   { id: "socios", label: "Socios" },
@@ -8,7 +10,9 @@ const ITEMS = [
   { id: "configuracion", label: "Configuración" },
 ];
 
-export default function Sidebar({ vistaActiva, onCambiarVista, onSalir }) {
+export default function Sidebar() {
+  const { salir } = useAuth();
+
   return (
     <nav className="sidebar" aria-label="Navegación principal">
       <div className="sidebar-marca">
@@ -19,20 +23,19 @@ export default function Sidebar({ vistaActiva, onCambiarVista, onSalir }) {
       <ul className="sidebar-lista">
         {ITEMS.map((item) => (
           <li key={item.id}>
-            <button
-              className={
-                "sidebar-item" + (vistaActiva === item.id ? " sidebar-item-activo" : "")
+            <NavLink
+              to={`/${item.id}`}
+              className={({ isActive }) =>
+                "sidebar-item" + (isActive ? " sidebar-item-activo" : "")
               }
-              onClick={() => onCambiarVista(item.id)}
-              aria-current={vistaActiva === item.id ? "page" : undefined}
             >
               {item.label}
-            </button>
+            </NavLink>
           </li>
         ))}
       </ul>
 
-      <button className="sidebar-salir" onClick={onSalir}>
+      <button className="sidebar-salir" onClick={salir}>
         Salir
       </button>
     </nav>

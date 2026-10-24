@@ -31,9 +31,7 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -51,16 +49,12 @@ button {
   cursor: pointer;
 }
 
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-[tabindex]:focus-visible {
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   outline: 2px solid var(--color-verde);
   outline-offset: 2px;
 }
 
-input,
-textarea {
+input, textarea {
   font-family: inherit;
   background: var(--color-negro);
   border: 1px solid var(--color-verde-oscuro);
@@ -69,8 +63,7 @@ textarea {
   padding: 10px 14px;
 }
 
-input::placeholder,
-textarea::placeholder {
+input::placeholder, textarea::placeholder {
   color: var(--color-placeholder);
 }
 

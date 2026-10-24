@@ -1,11 +1,17 @@
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "./Login.css";
 import logo from "../../assets/logo-cerberus.png";
 
-export default function Login({ onIngresar }) {
+export default function Login() {
+  const { autenticado, ingresar } = useAuth();
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  if (autenticado) return <Navigate to="/socios" replace />;
 
   function manejarSubmit(e) {
     e.preventDefault();
@@ -16,7 +22,8 @@ export default function Login({ onIngresar }) {
     setError("");
     // Mock: cualquier combinación no vacía ingresa.
     // Cuando exista el backend, acá va la llamada real de autenticación.
-    onIngresar({ usuario });
+    ingresar({ usuario });
+    navigate("/socios", { replace: true });
   }
 
   return (

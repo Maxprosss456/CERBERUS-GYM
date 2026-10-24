@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useDatos } from "../../context/datosContext.jsx";
 import {
   DIAS_SEMANA,
   MESES,
@@ -19,7 +20,8 @@ const ETIQUETAS_ARIA = {
   registrado: "Pagos registrados",
 };
 
-export default function Calendario({ pagos, socios }) {
+export default function Calendario() {
+  const { pagos, socios } = useDatos();
   const hoy = new Date();
   const [anio, setAnio] = useState(hoy.getFullYear());
   const [mes, setMes] = useState(hoy.getMonth());
