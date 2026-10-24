@@ -60,7 +60,9 @@
 }
 
 .sidebar-item {
+  display: block;
   width: 100%;
+  text-decoration: none;
   text-align: left;
   background: transparent;
   border: none;

@@ -6,6 +6,7 @@ import Socios from "./components/Socios/Socios.jsx";
 import Pagos from "./components/Pagos/Pagos.jsx";
 import Calendario from "./components/Calendario/Calendario.jsx";
 import Configuracion from "./components/Configuracion/Configuracion.jsx";
+import "./index.css";
 
 export default function App() {
   return (
