@@ -12,7 +12,7 @@ const SOCIO_VACIO = {
   email: "",
   nota: "",
   foto: null,
-  fechaAlta: fechaLocalISO(),
+  fechaAsociacion: fechaLocalISO(),
   diaPago: "",
 };
 
@@ -154,8 +154,8 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               Socio desde
               <input
                 type="date"
-                value={form.fechaAlta}
-                onChange={(e) => actualizarCampo("fechaAlta", e.target.value)}
+                value={form.fechaAsociacion}
+                onChange={(e) => actualizarCampo("fechaAsociacion", e.target.value)}
                 onClick={(e) => e.currentTarget.showPicker?.()}
               />
             </label>

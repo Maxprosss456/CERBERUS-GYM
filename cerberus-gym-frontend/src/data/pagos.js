@@ -1,29 +1,24 @@
-import { pagos as pagosMock } from "../mockData.js";
+import { api } from "./api.js";
 import { fechaVencimientoPrimeraCuota, fechaVencimientoSiguienteCiclo } from "../utils/fechas.js";
 
-// ── Cuando el backend esté listo, ESTE es el único archivo a tocar. ──
-
-export async function obtenerPagos() {
-  return Promise.resolve(pagosMock);
+export function obtenerPagos() {
+  return api("/pagos");
 }
 
-export async function registrarPago(id, metodo, partes = null) {
-  // mock: simula un PATCH del backend. `partes` solo viene en pagos mixtos.
-  return Promise.resolve({ id, pagado: true, metodo, partes });
+export function crearPago(pago) {
+  return api("/pagos", { metodo: "POST", cuerpo: pago });
 }
 
-export async function crearPago(pago) {
-  // mock: simula el POST del backend, devolviendo el pago ya con id.
-  return Promise.resolve({ id: `pago_${Date.now()}`, ...pago });
+export function registrarPago(id, metodo, partes = null) {
+  return api(`/pagos/${id}/registrar`, { metodo: "PATCH", cuerpo: { metodo, partes } });
 }
 
-export async function deshacerPago(id) {
-  return Promise.resolve({ id, pagado: false, metodo: null, partes: null });
+export function deshacerPago(id) {
+  return api(`/pagos/${id}/deshacer`, { metodo: "PATCH" });
 }
 
-export async function eliminarPago(id) {
-  // mock: simula borrar un pago en el backend
-  return Promise.resolve(id);
+export function eliminarPago(id) {
+  return api(`/pagos/${id}`, { metodo: "DELETE" });
 }
 
 export function armarPagoInicial(socio, precioMensualidad) {
