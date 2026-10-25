@@ -46,32 +46,6 @@
   margin-top: 4px;
 }
 
-.config-drive {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.config-drive-boton {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  background: #ffffff;
-  color: #3c4043;
-  border: 1px solid #dadce0;
-  border-radius: var(--radio-chico);
-  padding: 10px 16px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: not-allowed;
-}
-
-.config-drive-icono {
-  width: 18px;
-  height: 18px;
-}
-
 .config-drive-texto {
   color: var(--color-texto-secundario);
   font-size: 0.8rem;

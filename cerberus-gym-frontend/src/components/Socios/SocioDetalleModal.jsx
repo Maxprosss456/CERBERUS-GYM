@@ -5,6 +5,22 @@ import "./Socios.css";
 
 export default function SocioDetalleModal({ socio, pagosDelSocio, onCerrar, onEditar, onEliminar }) {
   const [pidiendoConfirmacion, setPidiendoConfirmacion] = useState(false);
+  const [error, setError] = useState("");
+  const [eliminando, setEliminando] = useState(false);
+
+  async function confirmarEliminar() {
+    if (eliminando) return;
+    setError("");
+    setEliminando(true);
+    try {
+      await onEliminar(socio.id);
+      // Si salió bien, el padre cierra todo: no se toca más el estado.
+    } catch {
+      setError("No se pudo eliminar el socio. Intentá de nuevo.");
+      setPidiendoConfirmacion(false);
+      setEliminando(false);
+    }
+  }
 
   return (
     <>
@@ -59,6 +75,12 @@ export default function SocioDetalleModal({ socio, pagosDelSocio, onCerrar, onEd
             </ul>
           )}
 
+          {error && (
+            <p className="socio-detalle-error" role="alert">
+              {error}
+            </p>
+          )}
+
           <div className="socio-detalle-acciones">
             <button className="btn btn-secundario" onClick={onCerrar}>
               Cerrar
@@ -82,7 +104,7 @@ export default function SocioDetalleModal({ socio, pagosDelSocio, onCerrar, onEd
           mensaje={`¿Seguro que querés eliminar a ${socio.nombre} ${socio.apellido}? Esta acción no se puede deshacer.`}
           textoConfirmar="Sí, eliminar"
           onCerrar={() => setPidiendoConfirmacion(false)}
-          onConfirmar={() => onEliminar(socio.id)}
+          onConfirmar={confirmarEliminar}
         />
       )}
     </>

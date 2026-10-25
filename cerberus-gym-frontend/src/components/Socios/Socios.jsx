@@ -23,34 +23,19 @@ export default function Socios() {
   }, [socios, busqueda]);
 
   async function manejarGuardarAlta(nuevoSocio) {
-    try {
-      setError("");
-      await agregarSocio(nuevoSocio);
-      setMostrarAlta(false);
-    } catch {
-      setError("No se pudo guardar el socio. Intentá de nuevo.");
-    }
+    await agregarSocio(nuevoSocio);
+    setMostrarAlta(false);
   }
 
   async function manejarGuardarEdicion(datosForm) {
-    try {
-      setError("");
-      await editarSocio(socioEnEdicion.id, datosForm);
-      setSocioSeleccionado({ ...socioEnEdicion, ...datosForm });
-      setSocioEnEdicion(null);
-    } catch {
-      setError("No se pudieron guardar los cambios. Intentá de nuevo.");
-    }
+    await editarSocio(socioEnEdicion.id, datosForm);
+    setSocioSeleccionado({ ...socioEnEdicion, ...datosForm });
+    setSocioEnEdicion(null);
   }
 
   async function manejarEliminar(id) {
-    try {
-      setError("");
-      await eliminarSocio(id);
-      setSocioSeleccionado(null);
-    } catch {
-      setError("No se pudo eliminar el socio. Intentá de nuevo.");
-    }
+    await eliminarSocio(id);
+    setSocioSeleccionado(null);
   }
 
   function manejarEditar(socio) {

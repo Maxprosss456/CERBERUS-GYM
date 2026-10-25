@@ -26,6 +26,8 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
   const [form, setForm] = useState(
     esEdicion ? { ...SOCIO_VACIO, ...socioInicial } : SOCIO_VACIO
   );
+  const [error, setError] = useState("");
+  const [guardando, setGuardando] = useState(false);
   const inputFotoRef = useRef(null);
 
   function actualizarCampo(campo, valor) {
@@ -41,12 +43,24 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
     lector.readAsDataURL(archivo);
   }
 
-  function manejarSubmit(e) {
+  async function manejarSubmit(e) {
     e.preventDefault();
+    if (guardando) return;
+
     if (!form.nombre.trim() || !form.apellido.trim() || !form.dni.trim()) {
-      return; // Validación mínima; se puede reforzar cuando esté el backend.
+      setError("Completá nombre, apellido y DNI.");
+      return;
     }
-    onGuardar(form);
+
+    setError("");
+    setGuardando(true);
+    try {
+      await onGuardar(form);
+      // Si salió bien, el padre cierra el modal: no hay nada más que hacer acá.
+    } catch {
+      setError("No se pudo guardar el socio. Intentá de nuevo.");
+      setGuardando(false);
+    }
   }
 
   return (
@@ -170,12 +184,23 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
           </label>
         </div>
 
+        {error && (
+          <p className="socio-form-error" role="alert">
+            {error}
+          </p>
+        )}
+
         <div className="socio-form-acciones">
-          <button type="button" className="btn btn-secundario" onClick={onCerrar}>
+          <button
+            type="button"
+            className="btn btn-secundario"
+            onClick={onCerrar}
+            disabled={guardando}
+          >
             Cancelar
           </button>
-          <button type="submit" className="btn btn-primario">
-            {esEdicion ? "Guardar Cambios" : "Guardar Socio"}
+          <button type="submit" className="btn btn-primario" disabled={guardando}>
+            {guardando ? "Guardando…" : esEdicion ? "Guardar Cambios" : "Guardar Socio"}
           </button>
         </div>
       </form>

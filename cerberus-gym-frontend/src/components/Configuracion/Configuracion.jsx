@@ -78,23 +78,6 @@ export default function Configuracion() {
             </p>
           </div>
         </div>
-
-        <div className="config-fila">
-          <span className="config-label">Copia de Seguridad</span>
-          <div className="config-drive">
-            <button type="button" className="config-drive-boton" disabled>
-              <svg className="config-drive-icono" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7.71 3.5L1.15 15l3.43 6L11.14 9.5z" fill="#0F9D58" />
-                <path d="M16.29 3.5H7.71L14.57 15h8.58z" fill="#FFCF44" />
-                <path d="M22.85 15l-3.43 6H8.14l3.43-6z" fill="#4285F4" />
-              </svg>
-              Conectar con Google Drive
-            </button>
-            <p className="config-drive-texto">
-              Guardado / carga de socios con Drive (conexión a implementar por el equipo de back-end).
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
