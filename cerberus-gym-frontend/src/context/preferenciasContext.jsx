@@ -6,7 +6,7 @@ import {
   guardarPrecioMensualidad,
 } from "../utils/preferencias.js";
 
-const PreferenciasContext = createContext(null);
+const preferenciasContext = createContext(null);
 
 export function PreferenciasProvider({ children }) {
   const [diasAnticipacion, setDiasAnticipacion] = useState(obtenerDiasAnticipacionGuardado);
@@ -23,16 +23,16 @@ export function PreferenciasProvider({ children }) {
   }
 
   return (
-    <PreferenciasContext.Provider
+    <preferenciasContext.Provider
       value={{ diasAnticipacion, cambiarDiasAnticipacion, precioMensualidad, cambiarPrecioMensualidad }}
     >
       {children}
-    </PreferenciasContext.Provider>
+    </preferenciasContext.Provider>
   );
 }
 
 export function usePreferencias() {
-  const ctx = useContext(PreferenciasContext);
+  const ctx = useContext(preferenciasContext);
   if (!ctx) throw new Error("usePreferencias debe usarse dentro de PreferenciasProvider");
   return ctx;
 }
