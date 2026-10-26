@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { PreferenciasProvider } from "./context/preferenciasContext.jsx";
-import { DatosProvider } from "./context/DatosContext.jsx";
+import { DatosProvider } from "./context/datosContext.jsx";
 // tus imports de estilos globales siguen igual
 
 createRoot(document.getElementById("root")).render(

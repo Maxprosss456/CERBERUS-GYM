@@ -14,7 +14,7 @@ import {
 import { resolverFechaVencimiento } from "../utils/fechas.js";
 import { conEstadoCalculado } from "../utils/estadoPago.js";
 
-const DatosContext = createContext(null);
+const datosContext = createContext(null);
 
 export function DatosProvider({ children }) {
   const { autenticado } = useAuth();
@@ -124,7 +124,7 @@ export function DatosProvider({ children }) {
   }
 
   return (
-    <DatosContext.Provider
+    <datosContext.Provider
       value={{
         socios,
         pagos,
@@ -138,12 +138,12 @@ export function DatosProvider({ children }) {
       }}
     >
       {children}
-    </DatosContext.Provider>
+    </datosContext.Provider>
   );
 }
 
 export function useDatos() {
-  const ctx = useContext(DatosContext);
+  const ctx = useContext(datosContext);
   if (!ctx) throw new Error("useDatos debe usarse dentro de DatosProvider");
   return ctx;
 }
