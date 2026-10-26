@@ -6,41 +6,42 @@ async function obtenerTodos() {
   return data;
 }
 
-async function crear({ dni, nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion}) {
+async function crear({nombre, apellido, dni, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad}) {
   const { data, error } = await supabase
     .from('Socios')
-    .insert([{ dni, nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion }])
-    .select();
-  if (error) throw error;
-  return data;
-}
-
-async function borrar(dni) {
-  const { data, error } = await supabase
-    .from('Socios')
-    .delete()
-    .eq('dni', dni);
-  if (error) throw error;
-  return data;
-}
-
-async function actualizar(dni, { nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion }) {
-  const { data, error } = await supabase
-    .from('Socios')
-    .update({ nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion })
-    .eq('dni', dni);
-  if (error) throw error;
-  return data;
-}
-
-async function obtenerPorDni(dni) {
-  const { data, error } = await supabase
-    .from('Socios')
-    .select('*')
-    .eq('dni', dni)
+    .insert([{nombre, apellido, dni, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad}])
+    .select()
     .single();
   if (error) throw error;
   return data;
 }
 
-module.exports = { obtenerTodos, crear, borrar, actualizar, obtenerPorDni };
+async function borrar(id) {
+  const { data, error } = await supabase
+    .from('Socios')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+  return data;
+}
+
+async function actualizar(id, { nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad }) {
+  const { data, error } = await supabase
+    .from('Socios')
+    .update({ nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad })
+    .eq('id', id);
+  if (error) throw error;
+  return data;
+}
+
+async function obtenerPorId(id) {
+  const { data, error } = await supabase
+    .from('Socios')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+module.exports = { obtenerTodos, crear, borrar, actualizar, obtenerPorId };

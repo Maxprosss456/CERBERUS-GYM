@@ -2,7 +2,13 @@ import { Fragment, useMemo, useRef, useState } from "react";
 import PanelFlotante from "../PanelFlotante.jsx";
 import { useDatos } from "../../context/datosContext.jsx";
 import { MESES } from "../../utils/fechas.js";
-import { partesDelPago } from "../../utils/metodosPago.js";
+import {
+  EFECTIVO,
+  TRANSFERENCIA,
+  MIXTO,
+  nombreMetodo,
+  partesDelPago,
+} from "../../utils/metodosPago.js";
 import "./Pagos.css";
 
 const PESTANAS = [
@@ -19,8 +25,9 @@ const ETIQUETA_ESTADO = {
 
 const OPCIONES_FILTRO_METODO = [
   { id: "todos", label: "Todos" },
-  { id: "Efectivo", label: "Efectivo" },
-  { id: "Transferencia", label: "Transferencia" },
+  { id: EFECTIVO, label: nombreMetodo(EFECTIVO) },
+  { id: TRANSFERENCIA, label: nombreMetodo(TRANSFERENCIA) },
+  { id: MIXTO, label: nombreMetodo(MIXTO) },
 ];
 
 /** "2026-09-27" -> "Septiembre 2026" */
@@ -33,6 +40,26 @@ function etiquetaMes(fechaISO) {
 /** "2026-09-27" -> "2026-09", para comparar si dos fechas son del mismo mes. */
 function claveMes(fechaISO) {
   return fechaISO.slice(0, 7);
+}
+
+/**
+ * ¿El pago entra en el filtro? Un pago mixto se identifica por tener más de
+ * una parte (sus partes son Efectivo y Transferencia, nunca "Mixto").
+ * Al filtrar por Efectivo o Transferencia también aparecen los mixtos que
+ * incluyen ese método.
+ */
+function coincideConMetodo(pago, metodoFiltro) {
+  const partes = partesDelPago(pago);
+  if (metodoFiltro === MIXTO) return partes.length > 1;
+  return partes.some((parte) => parte.metodo === metodoFiltro);
+}
+
+/** Monto del pago que corresponde al método filtrado (para los totales). */
+function montoDelMetodo(pago, metodoFiltro) {
+  if (metodoFiltro === MIXTO) return pago.monto;
+  return partesDelPago(pago)
+    .filter((parte) => parte.metodo === metodoFiltro)
+    .reduce((acc, parte) => acc + parte.monto, 0);
 }
 
 export default function Pagos() {
@@ -71,7 +98,7 @@ export default function Pagos() {
       : pagos.filter((p) => p.estado === pestanaActiva);
 
     if (filtroMetodoVisible && filtroMetodo !== "todos") {
-      base = base.filter((p) => partesDelPago(p).some((parte) => parte.metodo === filtroMetodo));
+      base = base.filter((p) => coincideConMetodo(p, filtroMetodo));
     }
 
     const factor = orden === "asc" ? 1 : -1;
@@ -86,39 +113,39 @@ export default function Pagos() {
   }
 
   async function manejarElegirMetodo(pagoId, metodo) {
-  try {
-    setError("");
-    await registrarPago(pagoId, metodo);
-    cerrarPanel();
-  } catch {
-    setError("No se pudo registrar el pago. Intentá de nuevo.");
+    try {
+      setError("");
+      await registrarPago(pagoId, metodo);
+      cerrarPanel();
+    } catch {
+      setError("No se pudo registrar el pago. Intentá de nuevo.");
+    }
   }
-}
 
-async function manejarDeshacer(pagoId) {
-  try {
-    setError("");
-    await deshacerPago(pagoId);
-    cerrarPanel();
-  } catch {
-    setError("No se pudo deshacer el pago. Intentá de nuevo.");
+  async function manejarDeshacer(pagoId) {
+    try {
+      setError("");
+      await deshacerPago(pagoId);
+      cerrarPanel();
+    } catch {
+      setError("No se pudo deshacer el pago. Intentá de nuevo.");
+    }
   }
-}
 
-async function confirmarMixto(pago) {
-  const { valido, efectivo, resto } = calcularMixto(pago);
-  if (!valido) return;
-  try {
-    setError("");
-    await registrarPago(pago.id, "Mixto", [
-      { metodo: "Efectivo", monto: efectivo },
-      { metodo: "Transferencia", monto: resto },
-    ]);
-    cerrarPanel();
-  } catch {
-    setError("No se pudo registrar el pago mixto. Intentá de nuevo.");
+  async function confirmarMixto(pago) {
+    const { valido, efectivo, resto } = calcularMixto(pago);
+    if (!valido) return;
+    try {
+      setError("");
+      await registrarPago(pago.id, MIXTO, [
+        { metodo: EFECTIVO, monto: efectivo },
+        { metodo: TRANSFERENCIA, monto: resto },
+      ]);
+      cerrarPanel();
+    } catch {
+      setError("No se pudo registrar el pago mixto. Intentá de nuevo.");
+    }
   }
-}
 
   function alternarPanel(pagoId) {
     setModoMixto(false);
@@ -129,7 +156,7 @@ async function confirmarMixto(pago) {
   function abrirMixto(pago) {
     // Si el pago ya era mixto, precarga el efectivo que tenía.
     const partes = partesDelPago(pago);
-    const efectivo = partes.length > 1 ? partes.find((p) => p.metodo === "Efectivo") : null;
+    const efectivo = partes.length > 1 ? partes.find((p) => p.metodo === EFECTIVO) : null;
     setMontoEfectivo(efectivo ? String(efectivo.monto) : "");
     setModoMixto(true);
   }
@@ -202,10 +229,10 @@ async function confirmarMixto(pago) {
     pagosVisibles.forEach((p) => {
       const clave = claveMes(p.fecha);
       const anterior = mapa.get(clave) ?? { total: 0, cantidad: 0 };
-      const montoDelMetodo = partesDelPago(p)
-        .filter((parte) => parte.metodo === filtroMetodo)
-        .reduce((acc, parte) => acc + parte.monto, 0);
-      mapa.set(clave, { total: anterior.total + montoDelMetodo, cantidad: anterior.cantidad + 1 });
+      mapa.set(clave, {
+        total: anterior.total + montoDelMetodo(p, filtroMetodo),
+        cantidad: anterior.cantidad + 1,
+      });
     });
     return mapa;
   }, [pagosVisibles, filtroMetodoVisible, filtroMetodo]);
@@ -292,12 +319,13 @@ async function confirmarMixto(pago) {
           Mostrando resultados de "{busqueda}" en las 3 secciones.
         </p>
       )}
+
       {error && (
         <p className="pagos-error" role="alert">
           {error}
         </p>
       )}
-      
+
       <div className="pagos-lista">
         {pagosVisibles.length === 0 ? (
           <p className="pagos-vacio">No hay pagos para mostrar.</p>
@@ -333,8 +361,8 @@ async function confirmarMixto(pago) {
                           {partesDelPago(pago).map((parte, i, arr) => (
                             <span key={parte.metodo}>
                               {arr.length > 1
-                                ? `${parte.metodo} $${parte.monto.toLocaleString("es-AR")}`
-                                : parte.metodo}
+                                ? `${nombreMetodo(parte.metodo)} $${parte.monto.toLocaleString("es-AR")}`
+                                : nombreMetodo(parte.metodo)}
                             </span>
                           ))}
                         </span>
@@ -377,15 +405,15 @@ async function confirmarMixto(pago) {
                             <div className="panel-flotante-opciones">
                               <button
                                 className="btn btn-secundario"
-                                onClick={() => manejarElegirMetodo(pago.id, "Efectivo")}
+                                onClick={() => manejarElegirMetodo(pago.id, EFECTIVO)}
                               >
-                                Efectivo
+                                {nombreMetodo(EFECTIVO)}
                               </button>
                               <button
                                 className="btn btn-secundario"
-                                onClick={() => manejarElegirMetodo(pago.id, "Transferencia")}
+                                onClick={() => manejarElegirMetodo(pago.id, TRANSFERENCIA)}
                               >
-                                Transferencia
+                                {nombreMetodo(TRANSFERENCIA)}
                               </button>
                               <button
                                 className="btn btn-secundario"

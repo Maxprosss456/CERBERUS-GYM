@@ -12,7 +12,7 @@ const SOCIO_VACIO = {
   email: "",
   nota: "",
   foto: null,
-  fechaAsociacion: fechaLocalISO(),
+  fechaAlta: fechaLocalISO(),
   diaPago: "",
 };
 
@@ -47,7 +47,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
     e.preventDefault();
     if (guardando) return;
 
-    if (!form.nombre.trim() || !form.apellido.trim() || !form.dni.trim()) {
+    if (!form.nombre.trim() || !form.apellido.trim() || !form.dni) {
       setError("Completá nombre, apellido y DNI.");
       return;
     }
@@ -154,8 +154,8 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               Socio desde
               <input
                 type="date"
-                value={form.fechaAsociacion}
-                onChange={(e) => actualizarCampo("fechaAsociacion", e.target.value)}
+                value={form.fechaAlta}
+                onChange={(e) => actualizarCampo("fechaAlta", e.target.value)}
                 onClick={(e) => e.currentTarget.showPicker?.()}
               />
             </label>

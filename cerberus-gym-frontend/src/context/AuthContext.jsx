@@ -1,21 +1,27 @@
 import { createContext, useContext, useState } from "react";
+import { login } from "../data/auth.js";
 
 const AuthContext = createContext(null);
+const CLAVE = "autenticado";
 
 export function AuthProvider({ children }) {
-  const [usuario, setUsuario] = useState(null);
+  const [autenticado, setAutenticado] = useState(
+    () => sessionStorage.getItem(CLAVE) === "true"
+  );
 
-  function ingresar(datos) {
-    // Mock. Cuando exista el backend, la autenticación real va acá.
-    setUsuario(datos);
+  async function ingresar(usuario, password) {
+    await login(usuario, password); // lanza error si son incorrectos
+    sessionStorage.setItem(CLAVE, "true");
+    setAutenticado(true);
   }
 
   function salir() {
-    setUsuario(null);
+    sessionStorage.removeItem(CLAVE);
+    setAutenticado(false);
   }
 
   return (
-    <AuthContext.Provider value={{ autenticado: usuario !== null, usuario, ingresar, salir }}>
+    <AuthContext.Provider value={{ autenticado, ingresar, salir }}>
       {children}
     </AuthContext.Provider>
   );

@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get('/', controladorSocios.listarSocios);
 router.post('/', controladorSocios.crearSocio);
-router.delete('/:dni', controladorSocios.borrarSocio);
-router.put('/:dni', controladorSocios.actualizarSocio);
-router.get('/:dni', controladorSocios.obtenerPorDni);
+router.delete('/:id', controladorSocios.borrarSocio);
+router.patch('/:id', controladorSocios.actualizarSocio);
+router.get('/:id', controladorSocios.obtenerPorId);
 
 module.exports = router;

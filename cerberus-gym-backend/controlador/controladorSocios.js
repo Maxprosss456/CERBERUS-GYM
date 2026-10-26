@@ -11,8 +11,8 @@ async function listarSocios(req, res) {
 
 async function crearSocio(req, res) {
   try {
-    const { dni, nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion } = req.body;
-    const socio = await Socios.crear({ dni, nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion});
+    const { dni, nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad } = req.body;
+    const socio = await Socios.crear({ dni, nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad });
     res.status(201).json(socio);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -21,8 +21,8 @@ async function crearSocio(req, res) {
 
 async function borrarSocio(req, res) {
   try {
-    const { dni } = req.params;
-    const socio = await Socios.borrar(dni);
+    const { id } = req.params;
+    const socio = await Socios.borrar(id);
     res.json(socio);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -31,23 +31,23 @@ async function borrarSocio(req, res) {
 
 async function actualizarSocio(req, res) {
   try {
-    const { dni } = req.params;
-    const { nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion } = req.body;
-    const socio = await Socios.actualizar(dni, { nombre, apellido, telefono, email, fecha_asociacion, fecha_expiracion });
+    const { id } = req.params;
+    const { nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad } = req.body;
+    const socio = await Socios.actualizar(id, { nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad });
     res.json(socio);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 }
 
-async function obtenerPorDni(req, res) {
+async function obtenerPorId(req, res) {
   try {
-    const { dni } = req.params;
-    const socio = await Socios.obtenerPorDni(dni);
+    const { id } = req.params;
+    const socio = await Socios.obtenerPorId(id);
     res.json(socio);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 }
 
-module.exports = { listarSocios, crearSocio, borrarSocio, actualizarSocio, obtenerPorDni };
+module.exports = { listarSocios, crearSocio, borrarSocio, actualizarSocio, obtenerPorId };

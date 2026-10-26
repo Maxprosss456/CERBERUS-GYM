@@ -11,8 +11,8 @@ async function listarPagos(req, res) {
 
 async function crearPago(req, res) {
   try {
-    const { dni_socio, fecha_pagado, metodo_pago, monto } = req.body;
-    const pago = await Pagos.crear({ dni_socio, fecha_pagado, metodo_pago, monto });
+    const {socioId, monto, fecha, pagado, metodo } = req.body;
+    const pago = await Pagos.crear({socioId, monto, fecha, pagado, metodo });
     res.status(201).json(pago);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -32,8 +32,8 @@ async function borrarPago(req, res) {
 async function actualizarPago(req, res) {
   try {
     const { id } = req.params;
-    const { dni_socio, fecha_pagado, metodo_pago, monto } = req.body;
-    const pago = await Pagos.actualizar(id, { dni_socio, fecha_pagado, metodo_pago, monto });
+    const { socioId, monto, fecha, pagado, metodo } = req.body;
+    const pago = await Pagos.actualizar(id, { socioId, monto, fecha, pagado, metodo });
     res.json(pago);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -50,4 +50,23 @@ async function obtenerPagoPorId(req, res) {
   }
 }
 
-module.exports = { listarPagos, crearPago, borrarPago, actualizarPago, obtenerPagoPorId };
+async function registrarPago(req, res) {
+  try {
+    const { metodo } = req.body;
+    const pago = await Pagos.registrar(req.params.id, metodo);
+    res.json(pago);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+async function deshacerPago(req, res) {
+  try {
+    const pago = await Pagos.deshacer(req.params.id);
+    res.json(pago);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+module.exports = { listarPagos, crearPago, borrarPago, actualizarPago, obtenerPagoPorId, registrarPago, deshacerPago };

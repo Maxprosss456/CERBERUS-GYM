@@ -1,29 +1,36 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate} from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "./Login.css";
 import logo from "../../assets/logo-cerberus.png";
 
 export default function Login() {
   const { autenticado, ingresar } = useAuth();
-  const navigate = useNavigate();
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
   if (autenticado) return <Navigate to="/socios" replace />;
 
-  function manejarSubmit(e) {
+  async function manejarSubmit(e) {
     e.preventDefault();
+    if (guardando) return;
+
     if (!usuario.trim() || !password.trim()) {
       setError("Completá usuario y contraseña.");
       return;
     }
+
     setError("");
-    // Mock: cualquier combinación no vacía ingresa.
-    // Cuando exista el backend, acá va la llamada real de autenticación.
-    ingresar({ usuario });
-    navigate("/socios", { replace: true });
+    setGuardando(true);
+    try {
+      await ingresar(usuario.trim(), password);
+      // Al quedar autenticado, el <Navigate> de arriba redirige solo.
+    } catch (err) {
+      setError(err.message || "No se pudo iniciar sesión.");
+      setGuardando(false);
+    }
   }
 
   return (
@@ -53,8 +60,8 @@ export default function Login() {
 
         {error && <p className="login-error" role="alert">{error}</p>}
 
-        <button type="submit" className="btn btn-primario login-boton">
-          Ingresar
+        <button type="submit" className="btn btn-primario login-boton" disabled={guardando}>
+          {guardando ? "Ingresando…" : "Ingresar"}
         </button>
       </form>
     </div>

@@ -1,16 +1,6 @@
 export const socios = [
   {
-    id: "soc_001",
-    nombre: "Maximo",
-    apellido: "Ramos",
-    dni: "48000000",
-    telefono: "1123456789",
-    email: "maximo.ramos@gmail.com",
-    foto: null,
-    nota: "Evitar sentadilla profunda, molestia en la rodilla derecha.",
-    fechaAlta: "2026-02-14",
-    diaPago: 20,
-    precioMensualidad: 15000,
+
   },
   {
     id: "soc_002",

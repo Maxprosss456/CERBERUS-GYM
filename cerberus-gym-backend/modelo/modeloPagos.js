@@ -6,11 +6,12 @@ async function obtenerTodos() {
   return data;
 }
 
-async function crear({ dni_socio, fecha_pagado, metodo_pago, monto }) {
+async function crear({socioId, monto, fecha, pagado, metodo}) {
   const { data, error } = await supabase
     .from('Pagos')
-    .insert([{ dni_socio, fecha_pagado, metodo_pago, monto }])
-    .select();
+    .insert([{socioId, monto, fecha, pagado, metodo }])
+    .select()
+    .single();
   if (error) throw error;
   return data;
 }
@@ -24,10 +25,10 @@ async function borrar(id) {
   return data;
 }
 
-async function actualizar(id, { dni_socio, fecha_pagado, metodo_pago, monto }) {
+async function actualizar(id, { socioId, monto, fecha, pagado, metodo}) {
   const { data, error } = await supabase
     .from('Pagos')
-    .update({ dni_socio, fecha_pagado, metodo_pago, monto })
+    .update({ socioId, monto, fecha, pagado, metodo })
     .eq('id', id);
   if (error) throw error;
   return data;
@@ -42,4 +43,26 @@ async function obtenerPorId(id) {
   return data;
 }
 
-module.exports = { obtenerTodos, crear, borrar, actualizar, obtenerPorId };
+async function registrar(id, metodo) {
+  const { data, error } = await supabase
+    .from('Pagos')
+    .update({ pagado: true, metodo })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+async function deshacer(id) {
+  const { data, error } = await supabase
+    .from('Pagos')
+    .update({ pagado: false, metodo: null })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+module.exports = { obtenerTodos, crear, borrar, actualizar, obtenerPorId, registrar, deshacer };
