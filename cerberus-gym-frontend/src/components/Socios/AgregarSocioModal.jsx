@@ -102,7 +102,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
         <div className="socio-form-campos">
           <div className="socio-form-fila">
             <label>
-              Nombre
+              Nombre (*)
               <input
                 value={form.nombre}
                 onChange={(e) => actualizarCampo("nombre", e.target.value)}
@@ -110,7 +110,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               />
             </label>
             <label>
-              Apellido
+              Apellido (*)
               <input
                 value={form.apellido}
                 onChange={(e) => actualizarCampo("apellido", e.target.value)}
@@ -121,7 +121,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
 
           <div className="socio-form-fila">
             <label>
-              DNI
+              DNI (*)
               <input
                 value={form.dni}
                 onChange={(e) => actualizarCampo("dni", e.target.value)}
@@ -151,7 +151,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               />
             </label>
             <label>
-              Socio desde
+              Socio desde (*)
               <input
                 type="date"
                 value={form.fechaAlta}
@@ -162,7 +162,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
           </div>
 
           <label className="socio-form-campo-ancho">
-            Día de pago fijo (1-31)
+            Día de pago fijo (1-31) (*)
             <input
               type="number"
               min={1}
