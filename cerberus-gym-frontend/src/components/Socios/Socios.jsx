@@ -48,7 +48,7 @@ export default function Socios() {
         <input
           type="search"
           className="socios-buscador"
-          placeholder="Buscar Socio"
+          placeholder="Buscar socio por nombre o DNI"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           aria-label="Buscar socio por nombre o DNI"
