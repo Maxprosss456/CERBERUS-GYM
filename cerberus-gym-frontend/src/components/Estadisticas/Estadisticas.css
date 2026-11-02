@@ -1,0 +1,55 @@
+.estadisticas-encabezado {
+  margin-bottom: 28px;
+}
+
+.estadisticas-encabezado h1 {
+  margin-bottom: 6px;
+}
+
+.estadisticas-encabezado p,
+.estadisticas-nota {
+  color: var(--color-texto-secundario, #aaa);
+}
+
+.estadisticas h2 {
+  margin: 28px 0 14px;
+}
+
+.estadisticas-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.estadisticas-tarjeta {
+  min-height: 112px;
+  padding: 18px;
+  border: 1px solid var(--color-verde);
+  border-radius: var(--radio-medio);
+  background: #171717;
+}
+
+.estadisticas-tarjeta h3 {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.estadisticas-valor {
+  margin: 0;
+  color: var(--color-verde);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.estadisticas-tarjeta small {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-texto-secundario, #aaa);
+}
+
+.estadisticas-nota {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

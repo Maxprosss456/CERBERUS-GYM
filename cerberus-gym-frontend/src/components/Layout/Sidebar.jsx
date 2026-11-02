@@ -7,6 +7,7 @@ const ITEMS = [
   { id: "socios", label: "Socios" },
   { id: "pagos", label: "Pagos" },
   { id: "calendario", label: "Calendario" },
+  { id: "estadisticas", label: "Estadísticas" },
   { id: "configuracion", label: "Configuración" },
 ];
 

@@ -6,6 +6,7 @@ import Socios from "./components/Socios/Socios.jsx";
 import Pagos from "./components/Pagos/Pagos.jsx";
 import Calendario from "./components/Calendario/Calendario.jsx";
 import Configuracion from "./components/Configuracion/Configuracion.jsx";
+import Estadisticas from "./components/Estadisticas/Estadisticas.jsx";
 import "./index.css";
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="socios" element={<Socios />} />
           <Route path="pagos" element={<Pagos />} />
           <Route path="calendario" element={<Calendario />} />
+          <Route path="estadisticas" element={<Estadisticas />} />
           <Route path="configuracion" element={<Configuracion />} />
         </Route>
       </Route>

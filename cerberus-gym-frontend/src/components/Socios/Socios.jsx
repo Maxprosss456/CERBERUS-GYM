@@ -26,6 +26,25 @@ export default function Socios() {
     await agregarSocio(nuevoSocio);
     setMostrarAlta(false);
   }
+  
+  const estadisticas = useMemo(
+    () => [
+      { label: "Total de socios", valor: socios.length },
+      {
+        label: "Cuotas vencidas",
+        valor: pagos.filter((pago) => pago.estado === "pendiente").length,
+      },
+      {
+        label: "Cuotas próximas",
+        valor: pagos.filter((pago) => pago.estado === "proximo").length,
+      },
+      {
+        label: "Cuotas pagadas",
+        valor: pagos.filter((pago) => pago.estado === "registrado").length,
+      },
+    ],
+    [socios, pagos]
+  )
 
   async function manejarGuardarEdicion(datosForm) {
     await editarSocio(socioEnEdicion.id, datosForm);
@@ -44,6 +63,14 @@ export default function Socios() {
 
   return (
     <div className="socios-vista">
+      <div className="socios-estadisticas">
+        {estadisticas.map((item) => (
+          <div className="stat-card" key={item.label}>
+            <span className="stat-label">{item.label}</span>
+            <strong className="stat-valor">{item.valor}</strong>
+          </div>
+        ))}
+      </div>
       <div className="socios-toolbar">
         <input
           type="search"
