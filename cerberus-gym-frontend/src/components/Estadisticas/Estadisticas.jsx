@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useDatos } from "../../context/datosContext.jsx";
 import "./Estadisticas.css";
+import { EFECTIVO, TRANSFERENCIA, partesDelPago } from "../../utils/metodosPago.js";
 
 const formatoMoneda = new Intl.NumberFormat("es-AR", {
   style: "currency",
@@ -72,7 +73,27 @@ export default function Estadisticas() {
     const ingresosAnio = pagosRealizados
       .filter((pago) => dentroDelPeriodo(fechaContable(pago), anioActual))
       .reduce((total, pago) => total + Number(pago.monto || 0), 0);
+    const ingresosPorMetodo = (lista, metodo) =>
+      lista.reduce((total, pago) => {
+        const montoMetodo = partesDelPago(pago)
+          .filter((parte) => Number(parte.metodo) === metodo)
+          .reduce((subtotal, parte) => subtotal + Number(parte.monto || 0), 0);
 
+        return total + montoMetodo;
+      }, 0);
+
+    const pagosMesIngresos = pagosRealizados.filter((pago) =>
+      dentroDelPeriodo(fechaContable(pago), anioActual, mesActual)
+    );
+
+    const pagosAnioIngresos = pagosRealizados.filter((pago) =>
+      dentroDelPeriodo(fechaContable(pago), anioActual)
+    );
+
+    const efectivoMes = ingresosPorMetodo(pagosMesIngresos, EFECTIVO);
+    const transferenciaMes = ingresosPorMetodo(pagosMesIngresos, TRANSFERENCIA);
+    const efectivoAnio = ingresosPorMetodo(pagosAnioIngresos, EFECTIVO);
+    const transferenciaAnio = ingresosPorMetodo(pagosAnioIngresos, TRANSFERENCIA);
     // Para clasificar puntualidad se necesita una fecha real de pago.
     const pagosConFechaReal = pagosRealizados.filter((pago) =>
       pago.fechaPago || pago.fecha_pagado || pago.fechaPagado
@@ -114,6 +135,10 @@ export default function Estadisticas() {
       pagosTardeMes: pagosMes.length - aTiempo(pagosMes),
       pagosATiempoAnio: aTiempo(pagosAnio),
       pagosTardeAnio: pagosAnio.length - aTiempo(pagosAnio),
+      efectivoMes,
+      transferenciaMes,
+      efectivoAnio,
+      transferenciaAnio,
     };
   }, [socios, pagos, anioActual, mesActual]);
 
@@ -191,8 +216,24 @@ export default function Estadisticas() {
           valor={formatoMoneda.format(estadisticas.ingresosMes)}
         />
         <Tarjeta
+          titulo="Efectivo este mes"
+          valor={formatoMoneda.format(estadisticas.efectivoMes)}
+        />
+        <Tarjeta
+          titulo="Transferencias este mes"
+          valor={formatoMoneda.format(estadisticas.transferenciaMes)}
+        />
+        <Tarjeta
           titulo="Ingresos del año"
           valor={formatoMoneda.format(estadisticas.ingresosAnio)}
+        />
+        <Tarjeta
+          titulo="Efectivo este año"
+          valor={formatoMoneda.format(estadisticas.efectivoAnio)}
+        />
+        <Tarjeta
+          titulo="Transferencias este año"
+          valor={formatoMoneda.format(estadisticas.transferenciaAnio)}
         />
       </div>
 
