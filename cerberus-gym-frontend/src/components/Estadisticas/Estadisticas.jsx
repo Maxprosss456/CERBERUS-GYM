@@ -51,13 +51,9 @@ export default function Estadisticas() {
 
     // Solo se cuentan bajas si el registro trae fechaBaja.
     // El sistema actual elimina socios en vez de guardar un historial de bajas.
-    const sociosConBaja = socios.filter((socio) => socio.fechaBaja);
-    const bajasMes = sociosConBaja.filter((socio) =>
-      dentroDelPeriodo(socio.fechaBaja, anioActual, mesActual)
-    ).length;
-    const bajasAnio = sociosConBaja.filter((socio) =>
-      dentroDelPeriodo(socio.fechaBaja, anioActual)
-    ).length;
+    const sociosConBaja = socios.filter((socio) => socio.activo === false);
+    const bajasMes = sociosConBaja.length;
+    const bajasAnio = bajasMes;
 
     const pagosRealizados = pagos.filter((pago) => pago.pagado);
 
