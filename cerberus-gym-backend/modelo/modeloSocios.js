@@ -1,7 +1,9 @@
 const supabase = require('../supabaseClient');
 
 async function obtenerTodos() {
-  const { data, error } = await supabase.from('Socios').select('*');
+  const { data, error } = await supabase.from('Socios')
+  .select('*')
+  .eq('activo', true);
   if (error) throw error;
   return data;
 }
@@ -19,7 +21,7 @@ async function crear({nombre, apellido, dni, telefono, email, foto, nota, fechaA
 async function borrar(id) {
   const { data, error } = await supabase
     .from('Socios')
-    .delete()
+    .update({ activo: false })
     .eq('id', id);
   if (error) throw error;
   return data;
