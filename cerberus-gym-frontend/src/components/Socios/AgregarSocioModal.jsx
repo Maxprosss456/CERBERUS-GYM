@@ -52,6 +52,16 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
       return;
     }
 
+    if (form.dni.length < 7 || form.dni.length > 9) {
+      setError("El DNI debe tener entre 7 y 9 dígitos.");
+      return;
+    }
+
+    if (form.telefono && (form.telefono.length < 10 || form.telefono.length > 15)) {
+      setError("El teléfono debe tener entre 10 y 15 dígitos.");
+      return;
+    }
+
     setError("");
     setGuardando(true);
     try {
@@ -124,18 +134,20 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               DNI (*)
               <input
                 value={form.dni}
-                onChange={(e) => actualizarCampo("dni", e.target.value)}
+                onChange={(e) => actualizarCampo("dni", e.target.value.replace(/\D/g, ""))}
                 placeholder="Ej: 48000000"
                 inputMode="numeric"
+                maxLength={9}
               />
             </label>
             <label>
               Número de teléfono
               <input
                 value={form.telefono}
-                onChange={(e) => actualizarCampo("telefono", e.target.value)}
+                onChange={(e) => actualizarCampo("telefono", e.target.value.replace(/\D/g, ""))}
                 placeholder="Ej: 1123456789"
                 inputMode="tel"
+                maxLength={15}
               />
             </label>
           </div>

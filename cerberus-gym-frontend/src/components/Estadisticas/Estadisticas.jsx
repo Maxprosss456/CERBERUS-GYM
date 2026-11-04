@@ -66,13 +66,17 @@ export default function Estadisticas() {
     const fechaContable = (pago) =>
       pago.fechaPago || pago.fecha_pagado || pago.fechaPagado || pago.fecha;
 
+    const montoPago = (pago) =>
+      partesDelPago(pago).reduce((t, p) => t + Number(p.monto || 0), 0);
+
     const ingresosMes = pagosRealizados
       .filter((pago) => dentroDelPeriodo(fechaContable(pago), anioActual, mesActual))
-      .reduce((total, pago) => total + Number(pago.monto || 0), 0);
+      .reduce((total, pago) => total + montoPago(pago), 0);
 
     const ingresosAnio = pagosRealizados
       .filter((pago) => dentroDelPeriodo(fechaContable(pago), anioActual))
-      .reduce((total, pago) => total + Number(pago.monto || 0), 0);
+      .reduce((total, pago) => total + montoPago(pago), 0);
+
     const ingresosPorMetodo = (lista, metodo) =>
       lista.reduce((total, pago) => {
         const montoMetodo = partesDelPago(pago)

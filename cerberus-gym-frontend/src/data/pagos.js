@@ -9,8 +9,8 @@ export function crearPago(pago) {
   return api("/pagos", { metodo: "POST", cuerpo: pago });
 }
 
-export function registrarPago(id, metodo, partes = null) {
-  return api(`/pagos/${id}/registrar`, { metodo: "PATCH", cuerpo: { metodo, partes } });
+export function registrarPago(id, metodo, partes = null, fechaPago = null) {
+  return api(`/pagos/${id}/registrar`, { metodo: "PATCH", cuerpo: { metodo, partes, fechaPago } });
 }
 
 export function deshacerPago(id) {

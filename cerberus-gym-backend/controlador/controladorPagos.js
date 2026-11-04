@@ -52,8 +52,8 @@ async function obtenerPagoPorId(req, res) {
 
 async function registrarPago(req, res) {
   try {
-    const { metodo } = req.body;
-    const pago = await Pagos.registrar(req.params.id, metodo);
+    const { metodo, partes, fechaPago } = req.body;
+    const pago = await Pagos.registrar(req.params.id, metodo, partes, fechaPago);
     res.json(pago);
   } catch (error) {
     res.status(400).json({ error: error.message });

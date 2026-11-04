@@ -11,7 +11,7 @@ import {
   armarPagoInicial,
   armarPagoSiguienteCiclo,
 } from "../data/pagos.js";
-import { resolverFechaVencimiento } from "../utils/fechas.js";
+import { resolverFechaVencimiento, fechaLocalISO } from "../utils/fechas.js";
 import { conEstadoCalculado } from "../utils/estadoPago.js";
 
 const datosContext = createContext(null);
@@ -85,7 +85,8 @@ export function DatosProvider({ children }) {
 
   async function registrarPago(id, metodo, partes = null) {
     const pagoAnterior = pagosBase.find((p) => p.id === id);
-    const actualizado = await registrarPagoApi(id, metodo, partes);
+    const fechaPago = pagoAnterior?.pagado ? null : fechaLocalISO();
+const actualizado = await registrarPagoApi(id, metodo, partes, fechaPago);
     setPagosBase((prev) => prev.map((p) => (p.id === id ? { ...p, ...actualizado } : p)));
 
     // Solo generamos el ciclo siguiente la PRIMERA vez que se marca como
