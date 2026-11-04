@@ -141,16 +141,16 @@ export default function Estadisticas() {
   const nombreMes = hoy.toLocaleDateString("es-AR", { month: "long" });
   const etiquetaPuntualidadMes = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosATiempoMes)
-    : "Sin datos";
+    : "0";
   const etiquetaTardeMes = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosTardeMes)
-    : "Sin datos";
+    : "0";
   const etiquetaPuntualidadAnio = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosATiempoAnio)
-    : "Sin datos";
+    : "0";
   const etiquetaTardeAnio = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosTardeAnio)
-    : "Sin datos";
+    : "0";
 
   return (
     <section className="estadisticas">
