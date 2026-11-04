@@ -5,43 +5,39 @@ import AgregarSocioModal from "./AgregarSocioModal.jsx";
 import SocioDetalleModal from "./SocioDetalleModal.jsx";
 import "./Socios.css";
 
+// Un socio está activo salvo que activo sea false, 0 o "false"
 const estaActivo = (socio) =>
-  socio.activo !== false || socio.activo !== 0 || socio.activo !== "false";
+  socio.activo !== false && socio.activo !== 0 && socio.activo !== "false";
 
 export default function Socios() {
   const { socios, pagos, agregarSocio, editarSocio, eliminarSocio } = useDatos();
 
-  const [vista, setVista] = useState("activos"); // "activos" | "bajas"
   const [busqueda, setBusqueda] = useState("");
   const [mostrarAlta, setMostrarAlta] = useState(false);
   const [socioSeleccionado, setSocioSeleccionado] = useState(null);
   const [socioEnEdicion, setSocioEnEdicion] = useState(null);
   const [error, setError] = useState("");
+
+  // Los socios dados de baja no se muestran en ninguna parte de esta vista
   const sociosActivos = useMemo(() => socios.filter(estaActivo), [socios]);
-  const sociosDeBaja = useMemo(() => socios.filter((s) => !estaActivo(s)), [socios]);
 
   const sociosFiltrados = useMemo(() => {
-    const base = vista === "activos" ? sociosActivos : sociosDeBaja;
     const termino = busqueda.trim().toLowerCase();
-    if (!termino) return base;
-    return base.filter((s) =>
+    if (!termino) return sociosActivos;
+    return sociosActivos.filter((s) =>
       `${s.nombre} ${s.apellido} ${s.dni}`.toLowerCase().includes(termino)
     );
-  }, [vista, sociosActivos, sociosDeBaja, busqueda]);
+  }, [sociosActivos, busqueda]);
 
-  async function manejarGuardarAlta(nuevoSocio) {
-    await agregarSocio(nuevoSocio);
-    setMostrarAlta(false);
-  }
-  
-  const estadisticas = useMemo(() => {
-    // Las cuotas de socios dados de baja no deben contarse
+  // Solo se cuentan las cuotas de socios activos
+  const pagosActivos = useMemo(() => {
     const idsActivos = new Set(sociosActivos.map((s) => s.id));
-    const pagosActivos = pagos.filter((p) => idsActivos.has(p.socioId));
+    return pagos.filter((p) => idsActivos.has(p.socioId));
+  }, [sociosActivos, pagos]);
 
-    return [
+  const estadisticas = useMemo(
+    () => [
       { label: "Total de socios", valor: sociosActivos.length },
-      { label: "Dados de baja", valor: sociosDeBaja.length },
       {
         label: "Cuotas vencidas",
         valor: pagosActivos.filter((p) => p.estado === "pendiente").length,
@@ -54,8 +50,14 @@ export default function Socios() {
         label: "Cuotas pagadas",
         valor: pagosActivos.filter((p) => p.estado === "registrado").length,
       },
-    ];
-  }, [sociosActivos, sociosDeBaja, pagos]);
+    ],
+    [sociosActivos, pagosActivos]
+  );
+
+  async function manejarGuardarAlta(nuevoSocio) {
+    await agregarSocio(nuevoSocio);
+    setMostrarAlta(false);
+  }
 
   async function manejarGuardarEdicion(datosForm) {
     await editarSocio(socioEnEdicion.id, datosForm);
@@ -84,25 +86,6 @@ export default function Socios() {
       </div>
 
       <div className="socios-toolbar">
-        <div className="socios-tabs" role="tablist">
-          <button
-            role="tab"
-            aria-selected={vista === "activos"}
-            className={`btn ${vista === "activos" ? "btn-primario" : ""}`}
-            onClick={() => setVista("activos")}
-          >
-            Activos ({sociosActivos.length})
-          </button>
-          <button
-            role="tab"
-            aria-selected={vista === "bajas"}
-            className={`btn ${vista === "bajas" ? "btn-primario" : ""}`}
-            onClick={() => setVista("bajas")}
-          >
-            Dados de baja ({sociosDeBaja.length})
-          </button>
-        </div>
-
         <input
           type="search"
           className="socios-buscador"
@@ -111,12 +94,9 @@ export default function Socios() {
           onChange={(e) => setBusqueda(e.target.value)}
           aria-label="Buscar socio por nombre o DNI"
         />
-
-        {vista === "activos" && (
-          <button className="btn btn-primario" onClick={() => setMostrarAlta(true)}>
-            + Agregar Nuevo Socio
-          </button>
-        )}
+        <button className="btn btn-primario" onClick={() => setMostrarAlta(true)}>
+          + Agregar Nuevo Socio
+        </button>
       </div>
 
       {error && (
@@ -153,7 +133,7 @@ export default function Socios() {
       {socioSeleccionado && !socioEnEdicion && (
         <SocioDetalleModal
           socio={socioSeleccionado}
-          pagosDelSocio={pagos.filter((p) => p.socioId === socioSeleccionado.id)}
+          pagosDelSocio={pagosActivos.filter((p) => p.socioId === socioSeleccionado.id)}
           onCerrar={() => setSocioSeleccionado(null)}
           onEditar={manejarEditar}
           onEliminar={manejarEliminar}
