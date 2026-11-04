@@ -39,10 +39,6 @@ const fechaRealDePago = (pago) =>
 // Fecha contable del pago: la real si existe, si no la que viene del backend
 const fechaContable = (pago) => fechaRealDePago(pago) || pago.fecha;
 
-// Fecha límite de la cuota
-const fechaVencimiento = (pago) =>
-  pago.fechaVencimiento || pago.fecha_vencimiento || pago.fecha;
-
 function Tarjeta({ titulo, valor, detalle }) {
   return (
     <article className="estadisticas-tarjeta">
@@ -109,17 +105,6 @@ export default function Estadisticas() {
     const efectivoAnio = ingresosPorMetodo(pagosAnioIngresos, EFECTIVO);
     const transferenciaAnio = ingresosPorMetodo(pagosAnioIngresos, TRANSFERENCIA);
 
-    // ---------- Puntualidad ----------
-    const aTiempo = (lista) =>
-      lista.filter(
-        (pago) => fechaCorta(fechaContable(pago)) <= fechaCorta(fechaVencimiento(pago))
-      ).length;
-
-    const pagosATiempoMes = aTiempo(pagosMesIngresos);
-    const pagosATiempoAnio = aTiempo(pagosAnioIngresos);
-    const pagosTardeMes = pagosMesIngresos.length - pagosATiempoMes;
-    const pagosTardeAnio = pagosAnioIngresos.length - pagosATiempoAnio;
-
     return {
       sociosNuevosMes,
       sociosNuevosAnio,
@@ -128,10 +113,6 @@ export default function Estadisticas() {
       totalBajas,
       ingresosMes,
       ingresosAnio,
-      pagosATiempoMes,
-      pagosTardeMes,
-      pagosATiempoAnio,
-      pagosTardeAnio,
       efectivoMes,
       transferenciaMes,
       efectivoAnio,
@@ -146,7 +127,7 @@ export default function Estadisticas() {
       <header className="estadisticas-encabezado">
         <h1>Estadísticas</h1>
         <p>
-          Resumen de {nombreMes} y {anioActual}.
+          Resumen de "{nombreMes}" en el "{anioActual}".
         </p>
       </header>
 
@@ -157,14 +138,6 @@ export default function Estadisticas() {
         <Tarjeta titulo="Bajas este mes" valor={estadisticas.bajasMes} />
         <Tarjeta titulo="Bajas este año" valor={estadisticas.bajasAnio} />
         <Tarjeta titulo="Bajas totales" valor={estadisticas.totalBajas} />
-      </div>
-
-      <h2>Pagos</h2>
-      <div className="estadisticas-grilla">
-        <Tarjeta titulo="Pagaron a tiempo este mes" valor={estadisticas.pagosATiempoMes} />
-        <Tarjeta titulo="Pagaron tarde este mes" valor={estadisticas.pagosTardeMes} />
-        <Tarjeta titulo="Pagaron a tiempo este año" valor={estadisticas.pagosATiempoAnio} />
-        <Tarjeta titulo="Pagaron tarde este año" valor={estadisticas.pagosTardeAnio} />
       </div>
 
       <h2>Ingresos registrados</h2>

@@ -43,12 +43,10 @@ async function obtenerPorId(id) {
   return data;
 }
 
-async function registrar(id, metodo, partes = null, fechaPago = null) {
-  const cambios = { pagado: true, metodo, partes };
-  if (fechaPago) cambios.fechaPago = fechaPago;
+async function registrar(id, metodo) {
   const { data, error } = await supabase
     .from('Pagos')
-    .update(cambios)
+    .update({ pagado: true, metodo })
     .eq('id', id)
     .select()
     .single();
@@ -59,7 +57,7 @@ async function registrar(id, metodo, partes = null, fechaPago = null) {
 async function deshacer(id) {
   const { data, error } = await supabase
     .from('Pagos')
-    .update({ pagado: false, metodo: null, partes: null, fechaPago: null })
+        .update({ pagado: false, metodo: null })
     .eq('id', id)
     .select()
     .single();
