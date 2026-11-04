@@ -28,10 +28,20 @@ function dentroDelPeriodo(fecha, anio, mes = null) {
   return fechaAnio === anio && (mes === null || fechaMes === mes + 1);
 }
 
-const fechaDeBaja = (socio) => socio.fechaBaja || socio.fecha_baja;
-const fechaRealDePago = (pago) => pago.fechaPago || pago.fecha_pagado || pago.fechaPagado;
-// Si no hay fecha real de pago, se usa la fecha de vencimiento como aproximación
+// Fecha de baja del socio: si no hay una específica, se usa la última modificación
+const fechaDeBaja = (socio) =>
+  socio.fechaBaja || socio.fecha_baja || socio.updated_at || socio.updatedAt;
+
+// Fecha real en que se pagó (si el backend la manda)
+const fechaRealDePago = (pago) =>
+  pago.fechaPago || pago.fecha_pagado || pago.fechaPagado;
+
+// Fecha contable del pago: la real si existe, si no la que viene del backend
 const fechaContable = (pago) => fechaRealDePago(pago) || pago.fecha;
+
+// Fecha límite de la cuota
+const fechaVencimiento = (pago) =>
+  pago.fechaVencimiento || pago.fecha_vencimiento || pago.fecha;
 
 function Tarjeta({ titulo, valor, detalle }) {
   return (
@@ -51,7 +61,6 @@ export default function Estadisticas() {
 
   const estadisticas = useMemo(() => {
     // ---------- Socios ----------
-    // Los nuevos se cuentan sobre todos los socios (aunque después se hayan dado de baja)
     const sociosNuevosMes = socios.filter((socio) =>
       dentroDelPeriodo(socio.fechaAlta, anioActual, mesActual)
     ).length;
@@ -63,18 +72,15 @@ export default function Estadisticas() {
     const sociosConBaja = socios.filter((socio) => !estaActivo(socio));
     const totalBajas = sociosConBaja.length;
 
-    // Para separar bajas por mes/año hace falta que el socio traiga la fecha de baja
-    const bajasConFecha = sociosConBaja.filter((socio) => fechaDeBaja(socio));
-    const fechaBajaDisponible = totalBajas === 0 || bajasConFecha.length > 0;
-
-    const bajasMes = bajasConFecha.filter((socio) =>
+    const bajasMes = sociosConBaja.filter((socio) =>
       dentroDelPeriodo(fechaDeBaja(socio), anioActual, mesActual)
     ).length;
-    const bajasAnio = bajasConFecha.filter((socio) =>
+
+    const bajasAnio = sociosConBaja.filter((socio) =>
       dentroDelPeriodo(fechaDeBaja(socio), anioActual)
     ).length;
 
-    // ---------- Pagos ----------
+    // ---------- Pagos e ingresos ----------
     const pagosRealizados = pagos.filter((pago) => pago.pagado);
 
     const pagosMesIngresos = pagosRealizados.filter((pago) =>
@@ -103,23 +109,16 @@ export default function Estadisticas() {
     const efectivoAnio = ingresosPorMetodo(pagosAnioIngresos, EFECTIVO);
     const transferenciaAnio = ingresosPorMetodo(pagosAnioIngresos, TRANSFERENCIA);
 
-    // ---------- Puntualidad (requiere fecha real de pago) ----------
-    const pagosConFechaReal = pagosRealizados.filter((pago) => fechaRealDePago(pago));
-
-    const pagosMes = pagosConFechaReal.filter((pago) =>
-      dentroDelPeriodo(fechaRealDePago(pago), anioActual, mesActual)
-    );
-    const pagosAnio = pagosConFechaReal.filter((pago) =>
-      dentroDelPeriodo(fechaRealDePago(pago), anioActual)
-    );
-
+    // ---------- Puntualidad ----------
     const aTiempo = (lista) =>
       lista.filter(
-        (pago) => fechaCorta(fechaRealDePago(pago)) <= fechaCorta(pago.fecha)
+        (pago) => fechaCorta(fechaContable(pago)) <= fechaCorta(fechaVencimiento(pago))
       ).length;
 
-    const pagosATiempoMes = aTiempo(pagosMes);
-    const pagosATiempoAnio = aTiempo(pagosAnio);
+    const pagosATiempoMes = aTiempo(pagosMesIngresos);
+    const pagosATiempoAnio = aTiempo(pagosAnioIngresos);
+    const pagosTardeMes = pagosMesIngresos.length - pagosATiempoMes;
+    const pagosTardeAnio = pagosAnioIngresos.length - pagosATiempoAnio;
 
     return {
       sociosNuevosMes,
@@ -127,14 +126,12 @@ export default function Estadisticas() {
       bajasMes,
       bajasAnio,
       totalBajas,
-      fechaBajaDisponible,
       ingresosMes,
       ingresosAnio,
-      puntualidadDisponible: pagosConFechaReal.length > 0,
       pagosATiempoMes,
-      pagosTardeMes: pagosMes.length - pagosATiempoMes,
+      pagosTardeMes,
       pagosATiempoAnio,
-      pagosTardeAnio: pagosAnio.length - pagosATiempoAnio,
+      pagosTardeAnio,
       efectivoMes,
       transferenciaMes,
       efectivoAnio,
@@ -143,12 +140,6 @@ export default function Estadisticas() {
   }, [socios, pagos, anioActual, mesActual]);
 
   const nombreMes = hoy.toLocaleDateString("es-AR", { month: "long" });
-
-  const puntualidad = (valor) =>
-    estadisticas.puntualidadDisponible ? String(valor) : "Sin datos";
-
-  const bajasPeriodo = (valor) =>
-    estadisticas.fechaBajaDisponible ? valor : "Sin datos";
 
   return (
     <section className="estadisticas">
@@ -163,45 +154,17 @@ export default function Estadisticas() {
       <div className="estadisticas-grilla">
         <Tarjeta titulo="Nuevos este mes" valor={estadisticas.sociosNuevosMes} />
         <Tarjeta titulo="Nuevos este año" valor={estadisticas.sociosNuevosAnio} />
-        <Tarjeta
-          titulo="Bajas este mes"
-          valor={bajasPeriodo(estadisticas.bajasMes)}
-          detalle={
-            estadisticas.fechaBajaDisponible
-              ? undefined
-              : "Se necesita la fecha de baja para calcularlo."
-          }
-        />
-        <Tarjeta
-          titulo="Bajas este año"
-          valor={bajasPeriodo(estadisticas.bajasAnio)}
-        />
+        <Tarjeta titulo="Bajas este mes" valor={estadisticas.bajasMes} />
+        <Tarjeta titulo="Bajas este año" valor={estadisticas.bajasAnio} />
         <Tarjeta titulo="Bajas totales" valor={estadisticas.totalBajas} />
       </div>
 
       <h2>Pagos</h2>
       <div className="estadisticas-grilla">
-        <Tarjeta
-          titulo="Pagaron a tiempo este mes"
-          valor={puntualidad(estadisticas.pagosATiempoMes)}
-          detalle={
-            estadisticas.puntualidadDisponible
-              ? undefined
-              : "Se necesita la fecha real de pago para calcularlo."
-          }
-        />
-        <Tarjeta
-          titulo="Pagaron tarde este mes"
-          valor={puntualidad(estadisticas.pagosTardeMes)}
-        />
-        <Tarjeta
-          titulo="Pagaron a tiempo este año"
-          valor={puntualidad(estadisticas.pagosATiempoAnio)}
-        />
-        <Tarjeta
-          titulo="Pagaron tarde este año"
-          valor={puntualidad(estadisticas.pagosTardeAnio)}
-        />
+        <Tarjeta titulo="Pagaron a tiempo este mes" valor={estadisticas.pagosATiempoMes} />
+        <Tarjeta titulo="Pagaron tarde este mes" valor={estadisticas.pagosTardeMes} />
+        <Tarjeta titulo="Pagaron a tiempo este año" valor={estadisticas.pagosATiempoAnio} />
+        <Tarjeta titulo="Pagaron tarde este año" valor={estadisticas.pagosTardeAnio} />
       </div>
 
       <h2>Ingresos registrados</h2>
@@ -238,8 +201,8 @@ export default function Estadisticas() {
 
       <p className="estadisticas-nota">
         Los ingresos usan la fecha real de pago si existe; si no, usan la fecha
-        de vencimiento de la cuota como aproximación. Los resultados históricos
-        también dependen de que los registros anteriores sigan disponibles.
+        de la cuota que envía el backend. Los resultados históricos también
+        dependen de que los registros anteriores sigan disponibles.
       </p>
     </section>
   );
