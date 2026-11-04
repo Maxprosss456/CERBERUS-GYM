@@ -51,7 +51,7 @@ export default function Estadisticas() {
 
     // Solo se cuentan bajas si el registro trae fechaBaja.
     // El sistema actual elimina socios en vez de guardar un historial de bajas.
-    const sociosConBaja = socios.filter((socio) => socio.activo === false);
+    const sociosConBaja = socios.filter((socio) => socio.activo == false);
     const bajasMes = sociosConBaja.length;
     const bajasAnio = bajasMes;
 
@@ -62,17 +62,13 @@ export default function Estadisticas() {
     const fechaContable = (pago) =>
       pago.fechaPago || pago.fecha_pagado || pago.fechaPagado || pago.fecha;
 
-    const montoPago = (pago) =>
-      partesDelPago(pago).reduce((t, p) => t + Number(p.monto || 0), 0);
-
     const ingresosMes = pagosRealizados
       .filter((pago) => dentroDelPeriodo(fechaContable(pago), anioActual, mesActual))
-      .reduce((total, pago) => total + montoPago(pago), 0);
+      .reduce((total, pago) => total + Number(pago.monto || 0), 0);
 
     const ingresosAnio = pagosRealizados
       .filter((pago) => dentroDelPeriodo(fechaContable(pago), anioActual))
-      .reduce((total, pago) => total + montoPago(pago), 0);
-
+      .reduce((total, pago) => total + Number(pago.monto || 0), 0);
     const ingresosPorMetodo = (lista, metodo) =>
       lista.reduce((total, pago) => {
         const montoMetodo = partesDelPago(pago)
@@ -145,16 +141,16 @@ export default function Estadisticas() {
   const nombreMes = hoy.toLocaleDateString("es-AR", { month: "long" });
   const etiquetaPuntualidadMes = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosATiempoMes)
-    : "0";
+    : "Sin datos";
   const etiquetaTardeMes = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosTardeMes)
-    : "0";
+    : "Sin datos";
   const etiquetaPuntualidadAnio = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosATiempoAnio)
-    : "0";
+    : "Sin datos";
   const etiquetaTardeAnio = estadisticas.puntualidadDisponible
     ? String(estadisticas.pagosTardeAnio)
-    : "0";
+    : "Sin datos";
 
   return (
     <section className="estadisticas">
@@ -219,6 +215,7 @@ export default function Estadisticas() {
           titulo="Ingresos del año"
           valor={formatoMoneda.format(estadisticas.ingresosAnio)}
         />
+
       </div>
 
       <p className="estadisticas-nota">
