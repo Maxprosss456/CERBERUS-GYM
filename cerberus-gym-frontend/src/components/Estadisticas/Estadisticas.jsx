@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useDatos } from "../../context/datosContext.jsx";
 import "./Estadisticas.css";
-import { EFECTIVO, TRANSFERENCIA, partesDelPago } from "../../utils/metodosPago.js";
+import { EFECTIVO, MIXTO, TRANSFERENCIA, partesDelPago } from "../../utils/metodosPago.js";
 
 const formatoMoneda = new Intl.NumberFormat("es-AR", {
   style: "currency",
@@ -212,24 +212,8 @@ export default function Estadisticas() {
           valor={formatoMoneda.format(estadisticas.ingresosMes)}
         />
         <Tarjeta
-          titulo="Efectivo este mes"
-          valor={formatoMoneda.format(estadisticas.efectivoMes)}
-        />
-        <Tarjeta
-          titulo="Transferencias este mes"
-          valor={formatoMoneda.format(estadisticas.transferenciaMes)}
-        />
-        <Tarjeta
           titulo="Ingresos del año"
           valor={formatoMoneda.format(estadisticas.ingresosAnio)}
-        />
-        <Tarjeta
-          titulo="Efectivo este año"
-          valor={formatoMoneda.format(estadisticas.efectivoAnio)}
-        />
-        <Tarjeta
-          titulo="Transferencias este año"
-          valor={formatoMoneda.format(estadisticas.transferenciaAnio)}
         />
       </div>
 
