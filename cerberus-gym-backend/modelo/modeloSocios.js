@@ -2,6 +2,13 @@ const supabase = require('../supabaseClient');
 
 async function obtenerTodos() {
   const { data, error } = await supabase.from('Socios')
+  .select('*');
+  if (error) throw error;
+  return data;
+}
+
+async function obtenerActivos() {
+  const { data, error } = await supabase.from('Socios')
   .select('*')
   .eq('activo', true);
   if (error) throw error;
@@ -46,4 +53,4 @@ async function obtenerPorId(id) {
   return data;
 }
 
-module.exports = { obtenerTodos, crear, borrar, actualizar, obtenerPorId };
+module.exports = { obtenerTodos, obtenerActivos, crear, borrar, actualizar, obtenerPorId };

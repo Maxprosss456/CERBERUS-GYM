@@ -20,6 +20,15 @@ async function listarSocios(req, res) {
   }
 }
 
+listarActivos = async (req, res) => {
+  try {
+    const socios = await Socios.obtenerActivos();
+    res.json(socios);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 async function crearSocio(req, res) {
   try {
     const errorValidacion = validarSocio(req.body, { exigirDni: true });
