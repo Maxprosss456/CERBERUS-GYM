@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useDatos } from "../../context/datosContext.jsx";
 import "./Estadisticas.css";
 import { EFECTIVO, TRANSFERENCIA, partesDelPago } from "../../utils/metodosPago.js";
+import { obtenerFechaBaja } from "../../utils/bajas.js";
 
 const formatoMoneda = new Intl.NumberFormat("es-AR", {
   style: "currency",
@@ -30,7 +31,11 @@ function dentroDelPeriodo(fecha, anio, mes = null) {
 
 // Fecha de baja del socio: si no hay una específica, se usa la última modificación
 const fechaDeBaja = (socio) =>
-  socio.fechaBaja || socio.fecha_baja || socio.updated_at || socio.updatedAt;
+  socio.fechaBaja ||
+  socio.fecha_baja ||
+  socio.updated_at ||
+  socio.updatedAt ||
+  obtenerFechaBaja(socio.id);
 
 // Fecha real en que se pagó (si el backend la manda)
 const fechaRealDePago = (pago) =>

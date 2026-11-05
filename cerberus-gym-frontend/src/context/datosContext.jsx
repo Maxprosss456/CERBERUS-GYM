@@ -11,7 +11,8 @@ import {
   armarPagoInicial,
   armarPagoSiguienteCiclo,
 } from "../data/pagos.js";
-import { resolverFechaVencimiento } from "../utils/fechas.js";
+import { resolverFechaVencimiento, fechaLocalISO } from "../utils/fechas.js";
+import { registrarBaja } from "../utils/bajas.js";
 import { conEstadoCalculado } from "../utils/estadoPago.js";
 
 const datosContext = createContext(null);
@@ -79,7 +80,8 @@ export function DatosProvider({ children }) {
 
   async function eliminarSocio(id) {
     await eliminarSocioApi(id);
-    setSocios((prev) => prev.filter((s) => s.id !== id));
+    registrarBaja(id, fechaLocalISO());
+    setSocios((prev) => prev.map((s) => (s.id === id ? { ...s, activo: false } : s)));
     setPagosBase((prev) => prev.filter((p) => p.socioId !== id));
   }
 
