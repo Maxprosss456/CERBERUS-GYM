@@ -30,19 +30,22 @@ function dentroDelPeriodo(fecha, anio, mes = null) {
 }
 
 // Fecha de baja del socio: si no hay una específica, se usa la última modificación
-const fechaDeBaja = (socio) =>
-  socio.fechaBaja ||
-  socio.fecha_baja ||
-  socio.updated_at ||
-  socio.updatedAt ||
-  obtenerFechaBaja(socio.id);
+function fechaDeBaja(socio) {
+  return (
+    socio.fecha_baja ||
+    obtenerFechaBaja(socio.id)
+  );
+}
 
 // Fecha real en que se pagó (si el backend la manda)
-const fechaRealDePago = (pago) =>
-  pago.fechaPago || pago.fecha_pagado || pago.fechaPagado;
+function fechaRealDePago(pago) {
+  return pago.fecha_pago;
+}
 
 // Fecha contable del pago: la real si existe, si no la que viene del backend
-const fechaContable = (pago) => fechaRealDePago(pago) || pago.fecha;
+function fechaContable(pago) {
+  return fechaRealDePago(pago);
+}
 
 function Tarjeta({ titulo, valor, detalle }) {
   return (
@@ -62,12 +65,13 @@ export default function Estadisticas() {
 
   const estadisticas = useMemo(() => {
     // ---------- Socios ----------
+    
     const sociosNuevosMes = socios.filter((socio) =>
-      dentroDelPeriodo(socio.fechaAlta, anioActual, mesActual)
+      dentroDelPeriodo(socio.fecha_asociacion, anioActual, mesActual)
     ).length;
 
     const sociosNuevosAnio = socios.filter((socio) =>
-      dentroDelPeriodo(socio.fechaAlta, anioActual)
+      dentroDelPeriodo(socio.fecha_asociacion, anioActual)
     ).length;
 
     const sociosConBaja = socios.filter((socio) => !estaActivo(socio));

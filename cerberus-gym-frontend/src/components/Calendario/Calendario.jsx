@@ -33,21 +33,31 @@ export default function Calendario() {
     return mapa;
   }, [socios]);
 
-  // Agrupa TODOS los pagos por fecha y por categoría (pendiente/proximo/
-  // aviso/registrado), así un mismo día puede combinar hasta dos a la vez
-  // (en la práctica, siempre "registrado" + una de las otras tres, nunca
-  // dos de las tres categorías "no pagadas" juntas, porque esas dependen
-  // de comparar la misma fecha contra el mismo "hoy").
+  
   const alertasPorFecha = useMemo(() => {
-    const mapa = new Map();
-    for (const pago of pagos) {
-      const clave = pago.fecha;
-      const actual = mapa.get(clave) ?? { pendiente: [], proximo: [], aviso: [], registrado: [] };
-      actual[pago.estado]?.push(pago);
-      mapa.set(clave, actual);
-    }
-    return mapa;
-  }, [pagos]);
+  const mapa = new Map();
+
+  for (const pago of pagos) {
+    const clave =
+      pago.estado === "registrado"
+        ? pago.fecha_pago
+        : pago.fecha_vencimiento;
+
+    if (!clave) continue;
+
+    const actual = mapa.get(clave) ?? {
+      pendiente: [],
+      proximo: [],
+      aviso: [],
+      registrado: []
+    };
+
+    actual[pago.estado]?.push(pago);
+    mapa.set(clave, actual);
+  }
+
+  return mapa;
+}, [pagos]);
 
   const celdas = useMemo(() => generarGrillaMes(anio, mes), [anio, mes]);
 

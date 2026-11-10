@@ -12,6 +12,24 @@ export const nombreMetodo = (id) => NOMBRES[id] ?? "—";
 
 /** Devuelve siempre una lista de { metodo, monto }, sea pago simple o mixto. */
 export function partesDelPago(pago) {
-  if (Array.isArray(pago.partes) && pago.partes.length > 0) return pago.partes;
-  return [{ metodo: pago.metodo, monto: pago.monto }];
+  const partes = [];
+
+  const efectivo = Number(pago.monto_efectivo || 0);
+  const transferencia = Number(pago.monto_transferencia || 0);
+
+  if (efectivo > 0) {
+    partes.push({
+      metodo: EFECTIVO,
+      monto: efectivo,
+    });
+  }
+
+  if (transferencia > 0) {
+    partes.push({
+      metodo: TRANSFERENCIA,
+      monto: transferencia,
+    });
+  }
+
+  return partes;
 }

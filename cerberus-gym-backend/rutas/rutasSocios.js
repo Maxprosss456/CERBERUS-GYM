@@ -4,6 +4,7 @@ const controladorSocios = require('../controlador/controladorSocios.js');
 const router = express.Router();
 
 router.get('/', controladorSocios.listarSocios);
+router.get('/activos', controladorSocios.listarActivos);
 router.post('/', controladorSocios.crearSocio);
 router.delete('/:id', controladorSocios.borrarSocio);
 router.patch('/:id', controladorSocios.actualizarSocio);

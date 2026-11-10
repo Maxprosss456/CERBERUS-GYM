@@ -84,7 +84,7 @@ export default function Pagos() {
   }, [socios]);
 
   function nombreDe(pago) {
-    const socio = socioPorId.get(pago.socioId);
+    const socio = socioPorId.get(pago.id_socio);
     return socio ? `${socio.nombre} ${socio.apellido}` : "Socio eliminado";
   }
 
@@ -102,7 +102,7 @@ export default function Pagos() {
     }
 
     const factor = orden === "asc" ? 1 : -1;
-    return [...base].sort((a, b) => factor * a.fecha.localeCompare(b.fecha));
+    return [...base].sort((a, b) => factor * a.fecha_vencimiento.localeCompare(b.fecha_vencimiento));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagos, pestanaActiva, busqueda, orden, socioPorId, filtroMetodo, filtroMetodoVisible]);
 
@@ -123,14 +123,21 @@ export default function Pagos() {
   }
 
   async function manejarDeshacer(pagoId) {
-    try {
-      setError("");
-      await deshacerPago(pagoId);
-      cerrarPanel();
-    } catch {
-      setError("No se pudo deshacer el pago. Intentá de nuevo.");
-    }
+  try {
+    setError("");
+    console.log("1. Antes de deshacer");
+
+    const respuesta = await deshacerPago(pagoId);
+    console.log("2. Respuesta de deshacer:", respuesta);
+
+    cerrarPanel();
+    console.log("3. Panel cerrado");
+
+  } catch (error) {
+    console.error("Error al deshacer:", error);
+    setError("No se pudo deshacer el pago. Intentá de nuevo.");
   }
+}
 
   async function confirmarMixto(pago) {
     const { valido, efectivo, resto } = calcularMixto(pago);
@@ -227,7 +234,7 @@ export default function Pagos() {
     if (!filtroMetodoVisible || filtroMetodo === "todos") return null;
     const mapa = new Map();
     pagosVisibles.forEach((p) => {
-      const clave = claveMes(p.fecha);
+      const clave = claveMes(p.fecha_vencimiento);
       const anterior = mapa.get(clave) ?? { total: 0, cantidad: 0 };
       mapa.set(clave, {
         total: anterior.total + montoDelMetodo(p, filtroMetodo),
@@ -331,15 +338,15 @@ export default function Pagos() {
           <p className="pagos-vacio">No hay pagos para mostrar.</p>
         ) : (
           pagosVisibles.map((pago, indice) => {
-            const mesActual = claveMes(pago.fecha);
-            const mesAnterior = indice > 0 ? claveMes(pagosVisibles[indice - 1].fecha) : null;
+            const mesActual = claveMes(pago.fecha_vencimiento);
+            const mesAnterior = indice > 0 ? claveMes(pagosVisibles[indice - 1].fecha_vencimiento) : null;
             const mostrarSeparador = mesActual !== mesAnterior;
 
             return (
               <Fragment key={pago.id}>
                 {mostrarSeparador && (
                   <div className="pagos-separador-mes">
-                    <span>{etiquetaMes(pago.fecha)}</span>
+                    <span>{etiquetaMes(pago.fecha_vencimiento)}</span>
                     {totalesPorMes?.has(mesActual) && (
                       <span className="pagos-separador-total">
                         ${totalesPorMes.get(mesActual).total.toLocaleString("es-AR")} ·{" "}
@@ -350,7 +357,7 @@ export default function Pagos() {
                   </div>
                 )}
                 <div className={`pagos-fila pagos-fila-${pago.estado}`}>
-                  <span className="pagos-fecha">{pago.fecha}</span>
+                  <span className="pagos-fecha">{pago.fecha_vencimiento}</span>
                   <span className="pagos-nombre">{nombreDe(pago)}</span>
                   <span className="pagos-monto">${pago.monto.toLocaleString("es-AR")}</span>
 

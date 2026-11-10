@@ -1,21 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Configuracion.css";
 import { TAMANOS, guardarTamanoFuente, obtenerTamanoFuenteGuardado } from "../../utils/preferencias.js";
 import { usePreferencias } from "../../context/preferenciasContext.jsx";
+import { obtenerConfiguracion, actualizarPrecioMensualidad } from "../../data/configuracion.js";
 
 export default function Configuracion() {
-  const {
-    diasAnticipacion,
-    cambiarDiasAnticipacion,
-    precioMensualidad,
-    cambiarPrecioMensualidad,
-  } = usePreferencias();
-
+  const { diasAnticipacion, cambiarDiasAnticipacion } = usePreferencias();
   const [tamanoFuente, setTamanoFuente] = useState(obtenerTamanoFuenteGuardado);
+  const [precio, setPrecio] = useState("");
+  const [avisoPrecio, setAvisoPrecio] = useState("");
+
+  useEffect(() => {
+    obtenerConfiguracion()
+      .then((config) => setPrecio(String(config)))
+      .catch(() => setAvisoPrecio("No se pudo cargar el precio."));
+  }, []);
 
   function manejarCambioTamano(indice) {
     setTamanoFuente(indice);
     guardarTamanoFuente(indice);
+  }
+
+  async function guardarPrecio() {
+    const valor = Number(precio);
+    if (precio === "" || !Number.isInteger(valor) || valor < 0) {
+      setAvisoPrecio("Ingresá un precio entero, mayor o igual a 0.");
+      return;
+    }
+    try {
+      await actualizarPrecioMensualidad(valor);
+      setAvisoPrecio("Precio guardado.");
+    } catch {
+      setAvisoPrecio("No se pudo guardar el precio.");
+    }
   }
 
   return (
@@ -49,10 +66,12 @@ export default function Configuracion() {
               type="number"
               min={0}
               step={500}
-              value={precioMensualidad}
-              onChange={(e) => cambiarPrecioMensualidad(Number(e.target.value) || 0)}
+              value={precio}
+              onChange={(e) => setPrecio(e.target.value)}
+              onBlur={guardarPrecio}
               className="config-input-numero"
             />
+            {avisoPrecio && <p role="status">{avisoPrecio}</p>}
             <p className="config-drive-texto">
               Este es el precio único que se cobra a todos los socios. Si lo cambiás, los pagos
               ya generados NO se modifican (mantienen el monto con el que se crearon); el precio

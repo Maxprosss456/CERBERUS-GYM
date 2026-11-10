@@ -1,38 +1,25 @@
 import { createContext, useContext, useState } from "react";
-import {
-  obtenerDiasAnticipacionGuardado,
-  guardarDiasAnticipacion,
-  obtenerPrecioMensualidadGuardado,
-  guardarPrecioMensualidad,
-} from "../utils/preferencias.js";
+import { obtenerDiasAnticipacionGuardado, guardarDiasAnticipacion } from "../utils/preferencias.js";
 
-const preferenciasContext = createContext(null);
+const PreferenciasContext = createContext(null);
 
 export function PreferenciasProvider({ children }) {
   const [diasAnticipacion, setDiasAnticipacion] = useState(obtenerDiasAnticipacionGuardado);
-  const [precioMensualidad, setPrecioMensualidad] = useState(obtenerPrecioMensualidadGuardado);
 
   function cambiarDiasAnticipacion(dias) {
     setDiasAnticipacion(dias);
     guardarDiasAnticipacion(dias);
   }
 
-  function cambiarPrecioMensualidad(precio) {
-    setPrecioMensualidad(precio);
-    guardarPrecioMensualidad(precio);
-  }
-
   return (
-    <preferenciasContext.Provider
-      value={{ diasAnticipacion, cambiarDiasAnticipacion, precioMensualidad, cambiarPrecioMensualidad }}
-    >
+    <PreferenciasContext.Provider value={{ diasAnticipacion, cambiarDiasAnticipacion }}>
       {children}
-    </preferenciasContext.Provider>
+    </PreferenciasContext.Provider>
   );
 }
 
 export function usePreferencias() {
-  const ctx = useContext(preferenciasContext);
+  const ctx = useContext(PreferenciasContext);
   if (!ctx) throw new Error("usePreferencias debe usarse dentro de PreferenciasProvider");
   return ctx;
 }

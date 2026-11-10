@@ -14,7 +14,7 @@ export default function DiaDetalleModal({ fecha, pagos, socioPorId, onCerrar }) 
     <Modal titulo={formatoFechaLarga(fecha)} onCerrar={onCerrar} ancho="560px">
       <div className="dia-detalle-lista">
         {pagos.map((pago) => {
-          const socio = socioPorId.get(pago.socioId);
+          const socio = socioPorId.get(pago.id_socio);
           const nombre = socio ? `${socio.nombre} ${socio.apellido}` : "Socio eliminado";
           return (
             <div key={pago.id} className={`dia-detalle-item dia-detalle-item-${pago.estado}`}>

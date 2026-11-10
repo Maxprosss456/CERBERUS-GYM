@@ -10,18 +10,11 @@ export const MESES_ABREV = [
 
 export const DIAS_SEMANA = ["Do", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
 
-/** "YYYY-MM-DD" -> Date (hora local, evita corrimiento por UTC) */
 export function parseFechaISO(iso) {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
 
-/**
- * Date -> "YYYY-MM-DD" usando la fecha LOCAL (no UTC).
- * OJO: nunca usar `date.toISOString().slice(0, 10)` para esto — eso
- * convierte a UTC primero, y en husos horarios negativos (como
- * Argentina, UTC-3) puede devolver el día siguiente si es de noche.
- */
 export function fechaLocalISO(date = new Date()) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -92,59 +85,4 @@ export function etiquetaDia(fecha, esPrimerDiaVisible) {
     return `${fecha.getDate()} ${MESES_ABREV[fecha.getMonth()]}`;
   }
   return `${fecha.getDate()}`;
-}
-
-/** Ajusta un día de mes al último día válido de ese mes (ej. 31 en abril -> 30). */
-export function clampDiaDelMes(anio, mes, dia) {
-  const ultimoDia = new Date(anio, mes + 1, 0).getDate();
-  return Math.min(dia, ultimoDia);
-}
-
-/** Fecha de vencimiento (ISO) de un socio para un mes/año dado, según su día fijo de pago. */
-export function fechaVencimientoDelMes(anio, mes, diaPago) {
-  const dia = clampDiaDelMes(anio, mes, diaPago);
-  return fechaLocalISO(new Date(anio, mes, dia));
-}
-
-/**
- * Fecha de vencimiento vigente de un pago: si ya está pagado, se
- * respeta la fecha histórica; si no, se recalcula en vivo usando el
- * día fijo de pago configurado en el socio (mes/año se toman de la
- * fecha ya cargada, el DÍA lo pisa el del socio).
- */
-export function resolverFechaVencimiento(pago, socio) {
-  if (pago.pagado || !socio?.diaPago) return pago.fecha;
-  const original = parseFechaISO(pago.fecha);
-  return fechaVencimientoDelMes(original.getFullYear(), original.getMonth(), socio.diaPago);
-}
-
-/**
- * Fecha de vencimiento del ciclo SIGUIENTE a una fecha dada: un mes
- * después, respetando el día fijo de pago del socio.
- */
-export function fechaVencimientoSiguienteCiclo(fechaISO, diaPago) {
-  const actual = parseFechaISO(fechaISO);
-  let anio = actual.getFullYear();
-  let mes = actual.getMonth() + 1;
-  if (mes > 11) {
-    mes = 0;
-    anio += 1;
-  }
-  return fechaVencimientoDelMes(anio, mes, diaPago);
-}
-
-/**
- * Fecha de vencimiento de la PRIMERA cuota de un socio nuevo: el
- * primer día de pago posterior a su fecha de alta. Si el día de pago
- * cae el mismo día del alta (o antes), ese mes ya se considera
- * cubierto y se salta directo al mes siguiente.
- */
-export function fechaVencimientoPrimeraCuota(fechaAltaISO, diaPago) {
-  const alta = parseFechaISO(fechaAltaISO);
-  const candidato = parseFechaISO(fechaVencimientoDelMes(alta.getFullYear(), alta.getMonth(), diaPago));
-
-  if (candidato <= alta) {
-    return fechaVencimientoSiguienteCiclo(fechaLocalISO(candidato), diaPago);
-  }
-  return fechaLocalISO(candidato);
 }

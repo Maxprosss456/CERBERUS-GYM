@@ -1,4 +1,7 @@
 const Socios = require('../modelo/modeloSocios');
+const Mensualidad = require('../modelo/modeloMensualidad');
+const Pagos = require('../modelo/modeloPagos');
+const { fechaVencimientoPrimeraCuota } = require('../utils/fechas');
 
 function validarSocio({ dni, telefono }, { exigirDni }) {
   if (exigirDni && !/^\d{7,9}$/.test(String(dni ?? ''))) {
@@ -20,47 +23,10 @@ async function listarSocios(req, res) {
   }
 }
 
-listarActivos = async (req, res) => {
+async function listarActivos(req, res) {
   try {
-    const socios = await Socios.obtenerActivos();
+    const socios = (await Socios.obtenerTodos()).filter(socio => socio.activo);
     res.json(socios);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-async function crearSocio(req, res) {
-  try {
-    const errorValidacion = validarSocio(req.body, { exigirDni: true });
-    if (errorValidacion) return res.status(400).json({ error: errorValidacion });
-
-    const { dni, nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad } = req.body;
-    const socio = await Socios.crear({ dni, nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad });
-    res.status(201).json(socio);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-async function borrarSocio(req, res) {
-  try {
-    const { id } = req.params;
-    const socio = await Socios.borrar(id);
-    res.json(socio);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-async function actualizarSocio(req, res) {
-  try {
-    const errorValidacion = validarSocio(req.body, { exigirDni: false });
-    if (errorValidacion) return res.status(400).json({ error: errorValidacion });
-
-    const { id } = req.params;
-    const { nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad } = req.body;
-    const socio = await Socios.actualizar(id, { nombre, apellido, telefono, email, foto, nota, fechaAlta, diaPago, precioMensualidad });
-    res.json(socio);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -76,4 +42,55 @@ async function obtenerPorId(req, res) {
   }
 }
 
-module.exports = { listarSocios, crearSocio, borrarSocio, actualizarSocio, obtenerPorId };
+async function crearSocio(req, res) {
+  let socio;
+
+  try {
+    const mensualidad = await Mensualidad.getMensualidad();
+
+    socio = await Socios.crear(req.body);
+
+    await Pagos.crear({
+      id_socio: socio.id,
+      monto: mensualidad,
+      fecha_vencimiento: fechaVencimientoPrimeraCuota(
+        socio.fecha_asociacion,
+        socio.dia_pago
+      ),
+    });
+
+    res.status(201).json(socio);
+  } catch (error) {
+    if (socio) await Socios.borrar(socio.id).catch(() => {});
+    res.status(400).json({ error: error.message });
+  }
+}
+
+async function borrarSocio(req, res) {
+  try {
+    const { id } = req.params;
+
+    const socio = await Socios.borrar(id);
+    await Pagos.eliminarNoPagados(id);
+
+    res.json(socio);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+async function actualizarSocio(req, res) {
+  try {
+    const errorValidacion = validarSocio(req.body, { exigirDni: false });
+    if (errorValidacion) return res.status(400).json({ error: errorValidacion });
+
+    const { id } = req.params;
+    const { nombre, apellido, telefono, email, foto, nota, fecha_asociacion, dia_pago } = req.body;
+    const socio = await Socios.actualizar(id, { nombre, apellido, telefono, email, foto, nota, fecha_asociacion, dia_pago});
+    res.json(socio);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+module.exports = { listarSocios, listarActivos, obtenerPorId, crearSocio, borrarSocio, actualizarSocio};

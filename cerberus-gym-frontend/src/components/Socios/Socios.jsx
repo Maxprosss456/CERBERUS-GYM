@@ -32,7 +32,7 @@ export default function Socios() {
   // Solo se cuentan las cuotas de socios activos
   const pagosActivos = useMemo(() => {
     const idsActivos = new Set(sociosActivos.map((s) => s.id));
-    return pagos.filter((p) => idsActivos.has(p.socioId));
+    return pagos.filter((p) => idsActivos.has(p.id_socio));
   }, [sociosActivos, pagos]);
 
   const estadisticas = useMemo(
@@ -133,7 +133,7 @@ export default function Socios() {
       {socioSeleccionado && !socioEnEdicion && (
         <SocioDetalleModal
           socio={socioSeleccionado}
-          pagosDelSocio={pagosActivos.filter((p) => p.socioId === socioSeleccionado.id)}
+          pagosDelSocio={pagosActivos.filter((p) => p.id_socio === socioSeleccionado.id)}
           onCerrar={() => setSocioSeleccionado(null)}
           onEditar={manejarEditar}
           onEliminar={manejarEliminar}

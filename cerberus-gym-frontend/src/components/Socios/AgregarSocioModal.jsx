@@ -12,8 +12,8 @@ const SOCIO_VACIO = {
   email: "",
   nota: "",
   foto: null,
-  fechaAlta: fechaLocalISO(),
-  diaPago: "",
+  fecha_asociacion: fechaLocalISO(),
+  dia_pago: "",
 };
 
 /**
@@ -38,9 +38,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
     const archivo = e.target.files?.[0];
     if (!archivo) return;
 
-    const lector = new FileReader();
-    lector.onload = (ev) => actualizarCampo("foto", ev.target.result);
-    lector.readAsDataURL(archivo);
+    actualizarCampo("foto", archivo);
   }
 
   async function manejarSubmit(e) {
@@ -82,11 +80,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
       <form className="socio-form" onSubmit={manejarSubmit}>
         <div className="socio-form-foto">
           <div className="socio-form-foto-circulo">
-            {form.foto ? (
-              <img src={form.foto} alt="" className="socio-form-foto-preview" />
-            ) : (
-              "Foto"
-            )}
+            {form.foto instanceof File ? "Foto seleccionada" : "Foto"}
           </div>
 
           {/* Input real, completamente oculto — se dispara por código.
@@ -138,6 +132,7 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
                 placeholder="Ej: 48000000"
                 inputMode="numeric"
                 maxLength={9}
+                readOnly={esEdicion}
               />
             </label>
             <label>
@@ -166,8 +161,8 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               Socio desde (*)
               <input
                 type="date"
-                value={form.fechaAlta}
-                onChange={(e) => actualizarCampo("fechaAlta", e.target.value)}
+                value={form.fecha_asociacion}
+                onChange={(e) => actualizarCampo("fecha_asociacion", e.target.value)}
                 onClick={(e) => e.currentTarget.showPicker?.()}
               />
             </label>
@@ -179,8 +174,8 @@ export default function AgregarSocioModal({ onCerrar, onGuardar, socioInicial })
               type="number"
               min={1}
               max={31}
-              value={form.diaPago}
-              onChange={(e) => actualizarCampo("diaPago", e.target.value)}
+              value={form.dia_pago}
+              onChange={(e) => actualizarCampo("dia_pago", e.target.value)}
               placeholder="Ej: 25"
             />
           </label>

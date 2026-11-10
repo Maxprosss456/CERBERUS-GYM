@@ -49,7 +49,7 @@ export default function SocioDetalleModal({ socio, pagosDelSocio, onCerrar, onEd
             </div>
             <div>
               <dt>Socio desde</dt>
-              <dd>{socio.fechaAlta || "—"}</dd>
+              <dd>{socio.fecha_asociacion || "—"}</dd>
             </div>
           </dl>
 
@@ -67,7 +67,7 @@ export default function SocioDetalleModal({ socio, pagosDelSocio, onCerrar, onEd
             <ul className="socio-detalle-pagos">
               {pagosDelSocio.map((p) => (
                 <li key={p.id} className={`pago-chip pago-chip-${p.estado}`}>
-                  <span>{p.fecha}</span>
+                  <span>{p.fecha_vencimiento}</span>
                   <span>${p.monto.toLocaleString("es-AR")}</span>
                   <span>{etiquetaEstado(p.estado)}</span>
                 </li>
