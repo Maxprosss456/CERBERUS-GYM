@@ -16,7 +16,11 @@ async function login(req, res) {
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
     }
 
-    res.json({ ok: true });
+    res.json({
+      ok: true,
+      usuario: registro.usuario,
+      rol: registro.roles?.rol ?? 'empleado',
+    });
   } catch {
     res.status(500).json({ error: 'Error al iniciar sesión.' });
   }

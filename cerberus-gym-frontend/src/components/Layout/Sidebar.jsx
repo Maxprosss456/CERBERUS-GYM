@@ -7,12 +7,13 @@ const ITEMS = [
   { id: "socios", label: "Socios" },
   { id: "pagos", label: "Pagos" },
   { id: "calendario", label: "Calendario" },
-  { id: "estadisticas", label: "Estadísticas" },
+  { id: "estadisticas", label: "Estadísticas", soloDueno: true },
   { id: "configuracion", label: "Configuración" },
 ];
 
 export default function Sidebar() {
-  const { salir } = useAuth();
+  const { salir, rol } = useAuth();
+  const items = ITEMS.filter((item) => !item.soloDueno || rol === "administrador");
 
   return (
     <nav className="sidebar" aria-label="Navegación principal">
@@ -22,7 +23,7 @@ export default function Sidebar() {
       </div>
 
       <ul className="sidebar-lista">
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <li key={item.id}>
             <NavLink
               to={`/${item.id}`}

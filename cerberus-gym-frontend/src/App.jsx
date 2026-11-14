@@ -19,7 +19,9 @@ export default function App() {
           <Route path="socios" element={<Socios />} />
           <Route path="pagos" element={<Pagos />} />
           <Route path="calendario" element={<Calendario />} />
-          <Route path="estadisticas" element={<Estadisticas />} />
+          <Route element={<RutaProtegida soloDueno />}>
+            <Route path="estadisticas" element={<Estadisticas />} />
+          </Route>
           <Route path="configuracion" element={<Configuracion />} />
         </Route>
       </Route>
