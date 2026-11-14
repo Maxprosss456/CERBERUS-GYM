@@ -3,6 +3,7 @@ import "./Configuracion.css";
 import { TAMANOS, guardarTamanoFuente, obtenerTamanoFuenteGuardado } from "../../utils/preferencias.js";
 import { usePreferencias } from "../../context/preferenciasContext.jsx";
 import { obtenerConfiguracion, actualizarPrecioMensualidad } from "../../data/configuracion.js";
+import CambiarPassword from "./CambiarPassword.jsx";
 
 export default function Configuracion() {
   const { diasAnticipacion, cambiarDiasAnticipacion } = usePreferencias();
@@ -97,6 +98,12 @@ export default function Configuracion() {
             </p>
           </div>
         </div>
+      </div>
+
+      <h2 className="config-titulo config-titulo-seccion">Usuarios</h2>
+
+      <div className="config-panel">
+        <CambiarPassword />
       </div>
     </div>
   );

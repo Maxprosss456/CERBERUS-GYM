@@ -67,3 +67,34 @@
   padding: 8px 10px;
   font-size: 0.9rem;
 }
+
+.config-titulo-seccion {
+  margin-top: 32px;
+}
+
+.config-input-texto {
+  width: 260px;
+  max-width: 100%;
+  background: var(--color-panel-claro);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-chico);
+  color: var(--color-texto);
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.config-boton {
+  align-self: flex-start;
+}
+
+.config-aviso-error {
+  color: var(--color-alerta);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.config-aviso-ok {
+  color: var(--color-verde);
+  font-size: 0.85rem;
+  margin: 0;
+}
