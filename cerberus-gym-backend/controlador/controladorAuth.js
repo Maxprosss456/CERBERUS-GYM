@@ -24,7 +24,7 @@ async function login(req, res) {
       { expiresIn: '8h' }
     );
 
-    res.json({ ok: true, usuario: registro.usuario, rol, token });
+    res.json({ ok: true, id: registro.id, usuario: registro.usuario, rol, token });
   } catch {
     res.status(500).json({ error: 'Error al iniciar sesión.' });
   }

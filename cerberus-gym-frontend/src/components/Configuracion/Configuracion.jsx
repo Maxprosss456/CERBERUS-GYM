@@ -4,9 +4,12 @@ import { TAMANOS, guardarTamanoFuente, obtenerTamanoFuenteGuardado } from "../..
 import { usePreferencias } from "../../context/preferenciasContext.jsx";
 import { obtenerConfiguracion, actualizarPrecioMensualidad } from "../../data/configuracion.js";
 import CambiarPassword from "./CambiarPassword.jsx";
+import GestionUsuarios from "./GestionUsuarios.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function Configuracion() {
   const { diasAnticipacion, cambiarDiasAnticipacion } = usePreferencias();
+  const { rol } = useAuth();
   const [tamanoFuente, setTamanoFuente] = useState(obtenerTamanoFuenteGuardado);
   const [precio, setPrecio] = useState("");
   const [avisoPrecio, setAvisoPrecio] = useState("");
@@ -105,6 +108,12 @@ export default function Configuracion() {
       <div className="config-panel">
         <CambiarPassword />
       </div>
+
+      {rol === "administrador" && (
+        <div className="config-panel">
+          <GestionUsuarios />
+        </div>
+      )}
     </div>
   );
 }
